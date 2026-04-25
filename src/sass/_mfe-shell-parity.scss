@@ -1,0 +1,62 @@
+/*
+ * Visual parity layer for authn override:
+ * approximates bundled MFE authn screen so we can keep using local overrides.
+ */
+
+.extra-large-screen-top-stripe {
+  display: none;
+}
+
+.layout {
+  background: linear-gradient(180deg, #eef4f8 0%, #e8f0f7 100%);
+}
+
+.layout .w-50.d-flex {
+  background: transparent;
+}
+
+.layout .w-50.d-flex .col-md-9.bg-primary-400 {
+  background: transparent !important;
+}
+
+.layout .w-50.d-flex .col-md-9 .logo {
+  display: none;
+}
+
+.layout .w-50.d-flex .col-md-9 .display-2 {
+  color: #1e3a67 !important;
+  max-width: 360px;
+}
+
+.layout .w-50.d-flex .col-md-9 .display-2 .text-accent-a {
+  color: #143a72 !important;
+}
+
+.layout .w-50.d-flex .col-md-3.bg-white {
+  display: none;
+}
+
+.content {
+  background: #ffffff;
+  border-radius: 0 0 28px 28px;
+  box-shadow: none;
+}
+
+@media (min-width: 1200px) {
+  .content {
+    min-height: calc(100vh - 64px);
+    border-top-right-radius: 28px;
+  }
+}
+
+.btn-brand,
+.btn-primary {
+  background-color: #123a78 !important;
+  border-color: #123a78 !important;
+}
+
+.btn-brand:hover,
+.btn-primary:hover {
+  background-color: #0f3166 !important;
+  border-color: #0f3166 !important;
+}
