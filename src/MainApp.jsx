@@ -26,6 +26,7 @@ import { ProgressiveProfiling } from './progressive-profiling';
 import { RecommendationsPage } from './recommendations';
 import { RegistrationPage } from './register';
 import { ResetPasswordPage } from './reset-password';
+import { RobboFooter, RobboHeader } from './robbo-layout';
 
 import './index.scss';
 
@@ -37,26 +38,32 @@ const MainApp = () => (
       <link rel="shortcut icon" href={getConfig().FAVICON_URL} type="image/x-icon" />
     </Helmet>
     {getConfig().ZENDESK_KEY && <Zendesk />}
-    <Routes>
-      <Route path="/" element={<Navigate replace to={updatePathWithQueryParams(REGISTER_PAGE)} />} />
-      <Route
-        path={REGISTER_EMBEDDED_PAGE}
-        element={<EmbeddedRegistrationRoute><RegistrationPage /></EmbeddedRegistrationRoute>}
-      />
-      <Route
-        path={LOGIN_PAGE}
-        element={
-          <UnAuthOnlyRoute><Logistration selectedPage={LOGIN_PAGE} /></UnAuthOnlyRoute>
-        }
-      />
-      <Route path={REGISTER_PAGE} element={<UnAuthOnlyRoute><Logistration /></UnAuthOnlyRoute>} />
-      <Route path={RESET_PAGE} element={<UnAuthOnlyRoute><ForgotPasswordPage /></UnAuthOnlyRoute>} />
-      <Route path={PASSWORD_RESET_CONFIRM} element={<ResetPasswordPage />} />
-      <Route path={AUTHN_PROGRESSIVE_PROFILING} element={<ProgressiveProfiling />} />
-      <Route path={RECOMMENDATIONS} element={<RecommendationsPage />} />
-      <Route path={PAGE_NOT_FOUND} element={<NotFoundPage />} />
-      <Route path="*" element={<Navigate replace to={PAGE_NOT_FOUND} />} />
-    </Routes>
+    <div className="robbo-layout-page">
+      <RobboHeader showUserDropdown={false} />
+      <main id="main">
+        <Routes>
+          <Route path="/" element={<Navigate replace to={updatePathWithQueryParams(REGISTER_PAGE)} />} />
+          <Route
+            path={REGISTER_EMBEDDED_PAGE}
+            element={<EmbeddedRegistrationRoute><RegistrationPage /></EmbeddedRegistrationRoute>}
+          />
+          <Route
+            path={LOGIN_PAGE}
+            element={
+              <UnAuthOnlyRoute><Logistration selectedPage={LOGIN_PAGE} /></UnAuthOnlyRoute>
+            }
+          />
+          <Route path={REGISTER_PAGE} element={<UnAuthOnlyRoute><Logistration /></UnAuthOnlyRoute>} />
+          <Route path={RESET_PAGE} element={<UnAuthOnlyRoute><ForgotPasswordPage /></UnAuthOnlyRoute>} />
+          <Route path={PASSWORD_RESET_CONFIRM} element={<ResetPasswordPage />} />
+          <Route path={AUTHN_PROGRESSIVE_PROFILING} element={<ProgressiveProfiling />} />
+          <Route path={RECOMMENDATIONS} element={<RecommendationsPage />} />
+          <Route path={PAGE_NOT_FOUND} element={<NotFoundPage />} />
+          <Route path="*" element={<Navigate replace to={PAGE_NOT_FOUND} />} />
+        </Routes>
+      </main>
+      <RobboFooter />
+    </div>
   </AppProvider>
 );
 
