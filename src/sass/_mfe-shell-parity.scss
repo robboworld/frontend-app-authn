@@ -111,13 +111,19 @@
 /* Standalone auth (no Robbo header/footer): full viewport, card, decorative glow */
 .robbo-auth-standalone-shell #main .layout {
   position: relative;
-  /* Lock border box to one viewport so vertical padding creates real inset; hero uses `min-vh-100` (100vh) otherwise and kills bottom gap. */
-  min-height: 100vh;
-  height: 100vh;
-  max-height: 100vh;
-  overflow: hidden;
-  align-items: stretch;
+  /* Stronger green wash than base `.layout` so the split reads clearly next to the white form column. */
+  background: linear-gradient(
+    180deg,
+    #bbf7d0 0%,
+    #d1fae5 22%,
+    #ecfdf5 48%,
+    #f0fdf4 72%,
+    #fafefa 92%,
+    #ffffff 100%
+  );
   box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
   padding-top: var(--authn-content-margin-top);
   padding-bottom: var(--authn-content-margin-bottom);
 }
@@ -140,16 +146,17 @@
   position: absolute;
   left: -18%;
   bottom: -28%;
-  width: min(72vw, 520px);
-  height: min(72vw, 520px);
+  width: min(82vw, 600px);
+  height: min(82vw, 600px);
   border-radius: 50%;
   background: radial-gradient(
     circle at 40% 40%,
-    rgba(74, 222, 128, 0.35) 0%,
-    rgba(187, 247, 208, 0.45) 38%,
-    rgba(255, 255, 255, 0) 72%
+    rgba(22, 163, 74, 0.42) 0%,
+    rgba(74, 222, 128, 0.52) 32%,
+    rgba(187, 247, 208, 0.5) 52%,
+    rgba(255, 255, 255, 0) 74%
   );
-  filter: blur(36px);
+  filter: blur(30px);
   pointer-events: none;
   z-index: 0;
 }
@@ -166,6 +173,10 @@
    * Rounding only top-left + bottom-right (Tutor-style split card).
    */
   .robbo-auth-standalone-shell #main .layout {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    align-items: stretch;
     justify-content: flex-start;
     padding-left: 0;
     padding-right: 0;
@@ -198,17 +209,36 @@
   }
 }
 
-/* Standalone: symmetric card below xl (split stacks vertically) */
+/*
+ * Standalone below xl (<1200): hero + card stack, centered like bundled Tutor narrow layout.
+ * (Above xl the split row uses fixed viewport height + overflow hidden — see min-width block.)
+ */
 @media (max-width: 1199.98px) {
+  .robbo-auth-standalone-shell #main .layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    height: auto;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: max(var(--authn-content-margin-top), 1rem);
+    padding-bottom: max(var(--authn-content-margin-bottom), 1.5rem);
+  }
+
   .robbo-auth-standalone-shell .content {
-    margin-top: var(--authn-content-panel-block-margin);
-    margin-right: var(--authn-content-margin-right);
-    margin-bottom: var(--authn-content-panel-block-margin);
-    margin-left: var(--authn-content-margin-left);
-    max-width: 100%;
-    width: calc(
-      100% - var(--authn-content-margin-left) - var(--authn-content-margin-right)
-    );
+    flex: 0 0 auto;
+    align-self: stretch;
+    width: min(100%, #{$authn-content-column-width});
+    max-width: $authn-content-column-width;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: auto;
+    margin-right: auto;
     border-radius: 20px;
     box-shadow: 0 1px 3px rgba(21, 128, 61, 0.08);
     box-sizing: border-box;
@@ -217,6 +247,61 @@
   .robbo-auth-standalone-shell .content > div {
     padding: 1.25rem 1.25rem 1.5rem;
     box-sizing: border-box;
+  }
+
+  /* Medium breakpoint hero: one column, heading above card (matches DefaultMediumLayout markup). */
+  .robbo-auth-standalone-shell #main .layout .w-100.p-0.mb-3.d-flex {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: $authn-stack-hero-max-width;
+    margin-inline: auto;
+    margin-bottom: 0 !important;
+  }
+
+  .robbo-auth-standalone-shell #main .layout .col-md-10.bg-primary-400 {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .robbo-auth-standalone-shell #main .layout .col-md-10 .d-flex.align-items-center.justify-content-center {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .robbo-auth-standalone-shell #main .layout .col-md-10 .display-1,
+  .robbo-auth-standalone-shell #main .layout .col-md-10 .main-heading {
+    text-align: center !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .robbo-auth-standalone-shell #main .layout .col-md-10 .display-1 {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Small breakpoint hero (DefaultSmallLayout). */
+  .robbo-auth-standalone-shell #main .layout > span.bg-primary-400.w-100 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: $authn-stack-hero-max-width;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 .d-flex.align-items-center {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 h1 {
+    text-align: center;
+    margin-left: 0.5rem !important;
+    margin-right: 0.5rem !important;
   }
 }
 
@@ -286,12 +371,67 @@
   box-shadow: 0 0 0 1px rgba(21, 128, 61, 0.25);
 }
 
+/* Native / Paragon selects: avoid harsh default black outline; match text fields */
+.robbo-auth-standalone-shell .content select.form-control,
+.robbo-auth-standalone-shell .content select.form-select,
+.robbo-auth-standalone-shell .content .pgn__form-control-select select {
+  border: 1px solid #ced4da;
+  outline: none;
+  box-shadow: none;
+}
+
+.robbo-auth-standalone-shell .content select.form-control:focus,
+.robbo-auth-standalone-shell .content select.form-select:focus,
+.robbo-auth-standalone-shell .content .pgn__form-control-select select:focus {
+  border-color: #15803d;
+  box-shadow: 0 0 0 1px rgba(21, 128, 61, 0.25);
+  outline: none;
+}
+
 .robbo-auth-standalone-shell .content #forgot-password.btn-link {
   color: #166534 !important;
 }
 
 .robbo-auth-standalone-shell .content #forgot-password.btn-link:hover {
   color: #14532d !important;
+}
+
+/*
+ * Logistration: `Tabs` sit outside `#main-content` but share the same visual column as `.mw-xs` forms.
+ * Center the stack and cap width to Paragon `mw-xs` (464px) so `nav.pgn__tabs` matches form fields.
+ */
+.robbo-auth-standalone-shell .content .authn-logistration {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.robbo-auth-standalone-shell .content .authn-logistration__inner {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: $authn-form-stack-max-width;
+}
+
+.robbo-auth-standalone-shell .content .authn-logistration > #controlled-tab,
+.robbo-auth-standalone-shell .content .authn-logistration > #main-content.main-content {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: $authn-form-stack-max-width;
+}
+
+.robbo-auth-standalone-shell .content .authn-logistration .main-content {
+  min-width: 0;
+}
+
+.robbo-auth-standalone-shell .content .authn-logistration nav.nav-tabs.pgn__tabs,
+.robbo-auth-standalone-shell .content .authn-logistration #controlled-tab .nav-tabs {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /*
@@ -313,11 +453,49 @@
   margin-bottom: -1px;
 }
 
-.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link:hover,
-.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-link:hover,
-.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"]:hover {
-  color: #4a5568;
-  border-bottom-color: transparent;
+/*
+ * Paragon `.nav-tabs .nav-link:focus` uses mixin `nav-tabs-link-focus`: a `::before` box with
+ * `$nav-tabs-link-focus-border-color` (dark) — reads as a black square after click/select.
+ */
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link::before,
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-link::before,
+.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"]::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Inactive tab: show green underline on hover (active tab keeps full rule below). */
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link:hover:not(.active):not([aria-selected="true"]),
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-link:hover:not(.active):not([aria-selected="true"]),
+.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"]:hover:not(.active):not([aria-selected="true"]) {
+  color: #166534;
+  background: transparent !important;
+  border-color: transparent !important;
+  border-bottom: 2px solid #15803d !important;
+  box-shadow: none;
+}
+
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link.active:hover,
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-item.show .nav-link:hover,
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-link.active:hover,
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-item.show .nav-link:hover,
+.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"].active:hover,
+.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"][aria-selected="true"]:hover {
+  color: #15803d;
+  font-weight: 600;
+  background: transparent !important;
+  border-color: transparent !important;
+  border-bottom: 2px solid #15803d !important;
+  box-shadow: none;
+}
+
+/* Remove grey “tile” from Bootstrap/Paragon tab hover + mouse focus ring */
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link:focus:not(:focus-visible),
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-link:focus:not(:focus-visible),
+.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"]:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+  background: transparent !important;
 }
 
 .robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link.active,
@@ -330,7 +508,9 @@
   font-weight: 600;
   background: transparent;
   border-color: transparent;
-  border-bottom-color: #15803d;
+  border-bottom: 2px solid #15803d;
+  outline: none;
+  box-shadow: none;
 }
 
 .robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link:focus-visible,

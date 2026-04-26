@@ -1,3 +1,9 @@
 // Minimum width for the form column (.main-content); the white `.content` panel can grow wider
 // (fills the right flex track next to the w-50 hero — no fixed max tied to this value).
 $authn-content-column-width: 520px;
+
+// Matches Paragon `$max-width-xs` / utility `.mw-xs` so tabs and `mw-xs` form stack share one width.
+$authn-form-stack-max-width: 464px;
+
+// Below xl: hero + white card stack; cap hero line length for centered heading.
+$authn-stack-hero-max-width: 36rem;
