@@ -47,7 +47,10 @@ const reducer = (state = defaultState, action = {}) => {
         loginResult: action.payload,
       };
     case LOGIN_REQUEST.FAILURE: {
-      const { email, loginError, redirectUrl } = action.payload;
+      // Saga passes the whole 400 body as `loginError` (email lives there, not on payload top-level).
+      const loginError = action.payload.loginError || {};
+      const email = action.payload.email ?? loginError?.email;
+      const redirectUrl = action.payload.redirectUrl ?? loginError?.redirectUrl;
       return {
         ...state,
         loginErrorCode: loginError.errorCode,
