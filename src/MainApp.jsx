@@ -3,12 +3,14 @@ import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { AppProvider } from '@edx/frontend-platform/react';
 import { Helmet } from 'react-helmet';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import classNames from 'classnames';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import {
   EmbeddedRegistrationRoute, NotFoundPage, registerIcons, UnAuthOnlyRoute, Zendesk,
 } from './common-components';
 import configureStore from './data/configureStore';
+import { isAuthStandaloneShellPath } from './data/authStandaloneShell';
 import {
   AUTHN_PROGRESSIVE_PROFILING,
   LOGIN_PAGE,
@@ -32,14 +34,17 @@ import './index.scss';
 
 registerIcons();
 
-const MainApp = () => (
-  <AppProvider store={configureStore()}>
-    <Helmet>
-      <link rel="shortcut icon" href={getConfig().FAVICON_URL} type="image/x-icon" />
-    </Helmet>
-    {getConfig().ZENDESK_KEY && <Zendesk />}
-    <div className="robbo-layout-page">
-      <RobboHeader showUserDropdown={false} />
+const MainAppRoutes = () => {
+  const { pathname } = useLocation();
+  const authStandaloneShell = isAuthStandaloneShellPath(pathname);
+
+  return (
+    <div
+      className={classNames('robbo-layout-page', {
+        'robbo-auth-standalone-shell': authStandaloneShell,
+      })}
+    >
+      {!authStandaloneShell && <RobboHeader showUserDropdown={false} />}
       <main id="main">
         <Routes>
           <Route path="/" element={<Navigate replace to={updatePathWithQueryParams(REGISTER_PAGE)} />} />
@@ -62,8 +67,18 @@ const MainApp = () => (
           <Route path="*" element={<Navigate replace to={PAGE_NOT_FOUND} />} />
         </Routes>
       </main>
-      <RobboFooter />
+      {!authStandaloneShell && <RobboFooter />}
     </div>
+  );
+};
+
+const MainApp = () => (
+  <AppProvider store={configureStore()}>
+    <Helmet>
+      <link rel="shortcut icon" href={getConfig().FAVICON_URL} type="image/x-icon" />
+    </Helmet>
+    {getConfig().ZENDESK_KEY && <Zendesk />}
+    <MainAppRoutes />
   </AppProvider>
 );
 

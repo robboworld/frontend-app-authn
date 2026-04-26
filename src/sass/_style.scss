@@ -1,3 +1,4 @@
+@import "_authn-layout-tokens.scss";
 // Load component based styles
 @import "_base_component.scss";
 @import "_registration.scss";
@@ -41,11 +42,11 @@ $elevation-level-2-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
 
 .main-content {
   @extend .pt-4;
-  min-width: 464px !important;
+  min-width: $authn-content-column-width;
 }
 
 .welcome-page-content {
-  min-width: 464px !important;
+  min-width: $authn-content-column-width;
 }
 
 .stateful-button-width {
@@ -313,7 +314,7 @@ select.form-control {
   justify-content: center;
 
   .tooltip-inner {
-    min-width: 464px !important;
+    min-width: $authn-content-column-width !important;
     background: $white;
     display: block;
     color: $gray-500;
@@ -402,7 +403,7 @@ select.form-control {
   }
 
   .tpa-skeleton {
-    min-width: 464px !important;
+    min-width: $authn-content-column-width !important;
   }
 }
 

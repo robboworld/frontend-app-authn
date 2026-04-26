@@ -24,8 +24,10 @@ const LargeLayout = () => {
               { 'ml-6': getConfig().SITE_NAME !== 'edX' },
             )}
           >
-            {formatMessage(messages['start.learning'])}
-            <div className="text-accent-a">
+            <span className="auth-hero-title-line d-block">
+              {formatMessage(messages['start.learning'])}
+            </span>
+            <div className="text-accent-a auth-hero-brand-line d-block">
               {formatMessage(messages['with.site.name'], { siteName: getConfig().SITE_NAME })}
             </div>
           </h1>

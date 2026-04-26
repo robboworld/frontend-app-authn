@@ -1,6 +1,9 @@
+@import "_authn-layout-tokens.scss";
+
 /*
  * Visual parity layer for authn override:
  * approximates bundled MFE authn screen so we can keep using local overrides.
+ * Accent greens align with robbo-theme LMS ($primary #15803d, $primary-light #f0fdf4).
  */
 
 .extra-large-screen-top-stripe {
@@ -8,7 +11,7 @@
 }
 
 .layout {
-  background: linear-gradient(180deg, #eef4f8 0%, #e8f0f7 100%);
+  background: linear-gradient(180deg, #f0fdf4 0%, #f7fef9 55%, #ffffff 100%);
 }
 
 .layout .w-50.d-flex {
@@ -24,16 +27,57 @@
 }
 
 .layout .w-50.d-flex .col-md-9 .display-2 {
-  color: #1e3a67 !important;
+  color: #166534 !important;
   max-width: 360px;
 }
 
 .layout .w-50.d-flex .col-md-9 .display-2 .text-accent-a {
-  color: #143a72 !important;
+  color: #15803d !important;
+  font-weight: 700;
+}
+
+/*
+ * Hero: Paragon `display-2` sets h1 font-size — reset h1, size first line on `.auth-hero-title-line`,
+ * second line on `.auth-hero-brand-line` (dedicated class, no long selector chains).
+ */
+@media (min-width: 1200px) {
+  .robbo-auth-standalone-shell .layout .w-50.d-flex .col-md-9 .display-2 {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .robbo-auth-standalone-shell .layout .w-50.d-flex .col-md-9 .display-2 .auth-hero-title-line {
+    font-size: 48px;
+    font-weight: 400;
+    color: #166534 !important;
+    text-align: left;
+  }
+
+  .robbo-auth-standalone-shell .layout .auth-hero-brand-line {
+    font-size: 64px;
+    line-height: 1.1;
+    margin-top: 0.12em;
+  }
 }
 
 .layout .w-50.d-flex .col-md-3.bg-white {
   display: none;
+}
+
+/* Hero: center within left column (Tutor parity) */
+.layout .w-50.d-flex .col-md-9 .min-vh-100.d-flex {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.layout .w-50.d-flex .col-md-9 .display-2 {
+  text-align: center;
+  margin-left: 0 !important;
 }
 
 .content {
@@ -49,14 +93,261 @@
   }
 }
 
+/*
+ * Standalone auth: inset for the white `.content` panel. Top/bottom apply as **padding on `.layout`**
+ * (reliable); left/right stay as **margin on `.content`**. Override e.g.
+ * `.robbo-layout-page.robbo-auth-standalone-shell { --authn-content-margin-top: 1rem; }`
+ */
+.robbo-layout-page.robbo-auth-standalone-shell {
+  /* Top/bottom insets apply as padding on `.layout` (reliable). Set e.g. `119px` for both when matching Tutor offset. */
+  --authn-content-margin-top: 0.5rem;
+  --authn-content-margin-right: 40px;
+  --authn-content-margin-bottom: 0.5rem;
+  --authn-content-margin-left: 0;
+  /* Vertical margin on the white `.content` panel (BaseContainer); override from Tutor/theme if needed. */
+  --authn-content-panel-block-margin: 40px;
+}
+
+/* Standalone auth (no Robbo header/footer): full viewport, card, decorative glow */
+.robbo-auth-standalone-shell #main .layout {
+  position: relative;
+  /* Lock border box to one viewport so vertical padding creates real inset; hero uses `min-vh-100` (100vh) otherwise and kills bottom gap. */
+  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  align-items: stretch;
+  box-sizing: border-box;
+  padding-top: var(--authn-content-margin-top);
+  padding-bottom: var(--authn-content-margin-bottom);
+}
+
+/* Hero column: fill padded `.layout`, not literal 100vh (would overflow past bottom padding). */
+.robbo-auth-standalone-shell #main .layout .w-50.d-flex .col-md-9 {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  min-height: 100%;
+}
+
+.robbo-auth-standalone-shell #main .layout .min-vh-100 {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+}
+
+.robbo-auth-standalone-shell #main .layout::before {
+  content: "";
+  position: absolute;
+  left: -18%;
+  bottom: -28%;
+  width: min(72vw, 520px);
+  height: min(72vw, 520px);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 40% 40%,
+    rgba(74, 222, 128, 0.35) 0%,
+    rgba(187, 247, 208, 0.45) 38%,
+    rgba(255, 255, 255, 0) 72%
+  );
+  filter: blur(36px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.robbo-auth-standalone-shell #main .layout .w-50.d-flex,
+.robbo-auth-standalone-shell #main .layout .content {
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 1200px) {
+  /*
+   * Right panel: full height, full width from vertical center to viewport right (flex remainder).
+   * Rounding only top-left + bottom-right (Tutor-style split card).
+   */
+  .robbo-auth-standalone-shell #main .layout {
+    justify-content: flex-start;
+    padding-left: 0;
+    padding-right: 0;
+    box-sizing: border-box;
+  }
+
+  .robbo-auth-standalone-shell .content {
+    flex: 1 1 0;
+    min-width: $authn-content-column-width;
+    width: auto;
+    max-width: none;
+    margin-top: var(--authn-content-panel-block-margin);
+    margin-right: var(--authn-content-margin-right);
+    margin-bottom: var(--authn-content-panel-block-margin);
+    margin-left: var(--authn-content-margin-left);
+    min-height: 0;
+    flex-grow: 1;
+    align-self: stretch;
+    border-top-left-radius: 28px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 28px;
+    border-bottom-left-radius: 0;
+    box-shadow: 0 1px 3px rgba(21, 128, 61, 0.08);
+    box-sizing: border-box;
+  }
+
+  .robbo-auth-standalone-shell .content > div {
+    padding: 1.75rem 1.75rem 2rem;
+    box-sizing: border-box;
+  }
+}
+
+/* Standalone: symmetric card below xl (split stacks vertically) */
+@media (max-width: 1199.98px) {
+  .robbo-auth-standalone-shell .content {
+    margin-top: var(--authn-content-panel-block-margin);
+    margin-right: var(--authn-content-margin-right);
+    margin-bottom: var(--authn-content-panel-block-margin);
+    margin-left: var(--authn-content-margin-left);
+    max-width: 100%;
+    width: calc(
+      100% - var(--authn-content-margin-left) - var(--authn-content-margin-right)
+    );
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(21, 128, 61, 0.08);
+    box-sizing: border-box;
+  }
+
+  .robbo-auth-standalone-shell .content > div {
+    padding: 1.25rem 1.25rem 1.5rem;
+    box-sizing: border-box;
+  }
+}
+
+/* Standalone: medium layout hero — same green tones as xl, no skew stripe */
+.robbo-auth-standalone-shell #main .layout .medium-screen-top-stripe {
+  display: none;
+}
+
+.robbo-auth-standalone-shell #main .layout .w-100.p-0.mb-3.d-flex {
+  position: relative;
+  z-index: 1;
+}
+
+.robbo-auth-standalone-shell #main .layout .col-md-10.bg-primary-400 {
+  background: transparent !important;
+}
+
+.robbo-auth-standalone-shell #main .layout .col-md-10.bg-primary-400 .logo {
+  display: none;
+}
+
+.robbo-auth-standalone-shell #main .layout .col-md-10 .main-heading,
+.robbo-auth-standalone-shell #main .layout .col-md-10 .display-1 {
+  color: #166534 !important;
+}
+
+.robbo-auth-standalone-shell #main .layout .col-md-10 .text-accent-a {
+  color: #15803d !important;
+  font-weight: 700;
+}
+
+.robbo-auth-standalone-shell #main .layout .w-100.p-0.mb-3 .col-md-2.bg-white {
+  display: none !important;
+}
+
+/* Standalone: small layout hero */
+.robbo-auth-standalone-shell #main .layout .small-screen-top-stripe {
+  display: none;
+}
+
+.robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+.robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 .logo-small {
+  display: none;
+}
+
+.robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 h1.text-white {
+  color: #166534 !important;
+}
+
+.robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 .text-accent-a {
+  color: #15803d !important;
+  font-weight: 700;
+}
+
+/* Standalone: form fields + text links (visual only) */
+.robbo-auth-standalone-shell .content .pgn__form-group {
+  text-align: left;
+}
+
+.robbo-auth-standalone-shell .content .form-control:focus {
+  border-color: #15803d;
+  box-shadow: 0 0 0 1px rgba(21, 128, 61, 0.25);
+}
+
+.robbo-auth-standalone-shell .content #forgot-password.btn-link {
+  color: #166534 !important;
+}
+
+.robbo-auth-standalone-shell .content #forgot-password.btn-link:hover {
+  color: #14532d !important;
+}
+
+/*
+ * Logistration tabs (Paragon): `id` is usually on a wrapper; `<nav>` is
+ * `nav.nav-tabs.pgn__tabs` with anchors `controlled-tab-tab-*`.
+ */
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs,
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs {
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link,
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-link,
+.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"] {
+  color: #6b7785;
+  font-weight: 400;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link:hover,
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-link:hover,
+.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"]:hover {
+  color: #4a5568;
+  border-bottom-color: transparent;
+}
+
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link.active,
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-item.show .nav-link,
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-link.active,
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-item.show .nav-link,
+.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"].active,
+.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"][aria-selected="true"] {
+  color: #15803d;
+  font-weight: 600;
+  background: transparent;
+  border-color: transparent;
+  border-bottom-color: #15803d;
+}
+
+.robbo-auth-standalone-shell #controlled-tab .nav-tabs .nav-link:focus-visible,
+.robbo-auth-standalone-shell nav.nav-tabs.pgn__tabs .nav-link:focus-visible,
+.robbo-auth-standalone-shell a.nav-link[role="tab"][id^="controlled-tab-tab-"]:focus-visible {
+  outline: 2px solid rgba(21, 128, 61, 0.45);
+  outline-offset: 2px;
+}
+
 .btn-brand,
 .btn-primary {
-  background-color: #123a78 !important;
-  border-color: #123a78 !important;
+  background-color: #15803d !important;
+  border-color: #15803d !important;
 }
 
 .btn-brand:hover,
 .btn-primary:hover {
-  background-color: #0f3166 !important;
-  border-color: #0f3166 !important;
+  background-color: #14532d !important;
+  border-color: #14532d !important;
 }
