@@ -101,7 +101,7 @@
 .robbo-layout-page.robbo-auth-standalone-shell {
   /* Top/bottom insets apply as padding on `.layout` (reliable). Set e.g. `119px` for both when matching Tutor offset. */
   --authn-content-margin-top: 0.5rem;
-  --authn-content-margin-right: 40px;
+  --authn-content-margin-right: 50px;
   --authn-content-margin-bottom: 0.5rem;
   --authn-content-margin-left: 0;
   /* Vertical margin on the white `.content` panel (BaseContainer); override from Tutor/theme if needed. */

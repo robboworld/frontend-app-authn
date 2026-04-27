@@ -2,15 +2,24 @@ import React from 'react';
 
 import { getConfig } from '@edx/frontend-platform';
 import { AppProvider } from '@edx/frontend-platform/react';
-import { Helmet } from 'react-helmet';
 import classNames from 'classnames';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 
 import {
-  EmbeddedRegistrationRoute, NotFoundPage, registerIcons, UnAuthOnlyRoute, Zendesk,
+  EmbeddedRegistrationRoute,
+  NotFoundPage,
+  registerIcons,
+  UnAuthOnlyRoute,
+  Zendesk,
 } from './common-components';
-import configureStore from './data/configureStore';
 import { isAuthStandaloneShellPath } from './data/authStandaloneShell';
+import configureStore from './data/configureStore';
 import {
   AUTHN_PROGRESSIVE_PROFILING,
   LOGIN_PAGE,
