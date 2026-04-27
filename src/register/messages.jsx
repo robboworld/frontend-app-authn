@@ -34,8 +34,28 @@ const messages = defineMessages({
   },
   'registration.opt.in.label': {
     id: 'registration.opt.in.label',
-    defaultMessage: 'I agree that {siteName} may send me marketing messages.',
-    description: 'Text for opt in option on register page.',
+    defaultMessage: 'Я согласен(а) получать новости и рекламные рассылки',
+    description: 'Text for opt in option on register page, aligned with guest landing.',
+  },
+  'registration.robbo.honor.consent': {
+    id: 'registration.robbo.honor.consent',
+    defaultMessage: 'Я даю согласие на {personalDataLink} на условиях {privacyLink}',
+    description: 'Robbo: honor_code checkbox, aligned with guest landing #registration',
+  },
+  'registration.robbo.honor.personal_data': {
+    id: 'registration.robbo.honor.personal_data',
+    defaultMessage: 'обработку своих персональных данных',
+    description: 'Link text for personal data document (Robbo landing)',
+  },
+  'registration.robbo.honor.privacy': {
+    id: 'registration.robbo.honor.privacy',
+    defaultMessage: 'политики конфиденциальности',
+    description: 'Link text for privacy document (Robbo landing)',
+  },
+  'registration.robbo.company.label': {
+    id: 'registration.robbo.company.label',
+    defaultMessage: 'Название компании',
+    description: 'Company field label, aligned with guest landing',
   },
   // Help text
   'help.text.name': {

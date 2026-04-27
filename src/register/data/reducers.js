@@ -21,7 +21,8 @@ export const defaultState = {
   registrationResult: {},
   registrationFormData: {
     configurableFormFields: {
-      marketingEmailsOptIn: true,
+      company: '',
+      marketingEmailsOptIn: false,
     },
     formFields: {
       name: '', email: '', username: '', password: '',
@@ -30,7 +31,7 @@ export const defaultState = {
       suggestion: '', type: '',
     },
     errors: {
-      name: '', email: '', username: '', password: '',
+      name: '', email: '', username: '', password: '', company: '',
     },
   },
   validations: null,

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { getConfig } from '@edx/frontend-platform';
 import { FormattedMessage, useIntl } from '@edx/frontend-platform/i18n';
@@ -13,44 +13,54 @@ const HonorCode = (props) => {
     errorMessage, onChangeHandler, fieldType, value,
   } = props;
 
-  useEffect(() => {
-    if (fieldType === 'tos_and_honor_code' && !value) {
-      onChangeHandler({ target: { name: 'honor_code', value: true } });
-    }
-  }, [fieldType, onChangeHandler, value]);
+  const agreeUrl = getConfig().TOS_AND_HONOR_CODE || '#';
+  const policyUrl = getConfig().PRIVACY_POLICY || '#';
 
   if (fieldType === 'tos_and_honor_code') {
     return (
       <div id="honor-code" className="micro text-muted mt-4">
-        <FormattedMessage
-          id="register.page.terms.of.service.and.honor.code"
-          defaultMessage="By creating an account, you agree to the {tosAndHonorCode} and you acknowledge that {platformName} and each
-                Member process your personal data in accordance with the {privacyPolicy}."
-          description="Text that appears on registration form stating honor code and privacy policy"
-          values={{
-            platformName: getConfig().SITE_NAME,
-            tosAndHonorCode: (
-              <Hyperlink
-                className="inline-link"
-                destination={getConfig().TOS_AND_HONOR_CODE || '#'}
-                target="_blank"
-                showLaunchIcon={false}
-              >
-                {formatMessage(messages['terms.of.service.and.honor.code'])}
-              </Hyperlink>
-            ),
-            privacyPolicy: (
-              <Hyperlink
-                className="inline-link"
-                destination={getConfig().PRIVACY_POLICY || '#'}
-                target="_blank"
-                showLaunchIcon={false}
-              >
-                {formatMessage(messages['privacy.policy'])}
-              </Hyperlink>
-            ),
-          }}
-        />
+        <Form.Checkbox
+          className="form-field--checkbox mt-1"
+          id="honor-code-tos"
+          checked={Boolean(value)}
+          name="honor_code"
+          onChange={onChangeHandler}
+        >
+          <FormattedMessage
+            id="registration.robbo.honor.consent"
+            description="Robbo: same legal links as guest landing #registration"
+            defaultMessage="Я даю согласие на {personalDataLink} на условиях {privacyLink}"
+            values={{
+              personalDataLink: (
+                <Hyperlink
+                  className="inline-link"
+                  destination={agreeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  showLaunchIcon={false}
+                >
+                  {formatMessage(messages['registration.robbo.honor.personal_data'])}
+                </Hyperlink>
+              ),
+              privacyLink: (
+                <Hyperlink
+                  className="inline-link"
+                  destination={policyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  showLaunchIcon={false}
+                >
+                  {formatMessage(messages['registration.robbo.honor.privacy'])}
+                </Hyperlink>
+              ),
+            }}
+          />
+        </Form.Checkbox>
+        {errorMessage && (
+          <Form.Control.Feedback type="invalid" className="form-text-size" hasIcon={false}>
+            {errorMessage}
+          </Form.Control.Feedback>
+        )}
       </div>
     );
   }
@@ -72,7 +82,7 @@ const HonorCode = (props) => {
           values={{
             platformName: getConfig().SITE_NAME,
             tosAndHonorCode: (
-              <Hyperlink variant="muted" destination={getConfig().TOS_AND_HONOR_CODE || '#'} target="_blank">
+              <Hyperlink variant="muted" destination={agreeUrl} target="_blank" rel="noopener noreferrer">
                 {formatMessage(messages['honor.code'])}
               </Hyperlink>
             ),
