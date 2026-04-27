@@ -47,6 +47,11 @@
   font-weight: 700;
   line-height: 1;
 
+  // Welcome hero second line (“профиль”): Robbo green (no `.text-accent-a` — Paragon uses `!important`).
+  .robbo-welcome-profile-accent {
+    color: $robbo-brand-primary;
+  }
+
   @include media-breakpoint-down('xl') {
     font-size: 3.75rem;
   }

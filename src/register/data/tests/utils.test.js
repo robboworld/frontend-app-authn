@@ -1,4 +1,4 @@
-import { isFormValid } from '../utils';
+import { isFormValid, prepareRegistrationPayload } from '../utils';
 
 describe('Payload validation', () => {
   let formatMessage;
@@ -73,5 +73,49 @@ describe('Payload validation', () => {
     expect(fieldErrors.username).toBeDefined();
     expect(fieldErrors.password).toBeDefined();
     expect(isValid).toBe(false);
+  });
+});
+
+describe('prepareRegistrationPayload', () => {
+  const base = {
+    name: 'N',
+    email: 'a@b.co',
+    username: 'u',
+    password: 'a1b2c3d4',
+    country: 'US',
+    honor_code: true,
+  };
+
+  test('adds next=/courses when no query next and not an enrollment flow', () => {
+    const payload = prepareRegistrationPayload(
+      { ...base },
+      {},
+      false,
+      0,
+      {},
+    );
+    expect(payload.next).toBe('/courses');
+  });
+
+  test('does not override an explicit next from query params', () => {
+    const payload = prepareRegistrationPayload(
+      { ...base },
+      {},
+      false,
+      0,
+      { next: '/some/path' },
+    );
+    expect(payload.next).toBe('/some/path');
+  });
+
+  test('does not set default next when course_id is in query', () => {
+    const payload = prepareRegistrationPayload(
+      { ...base },
+      {},
+      false,
+      0,
+      { course_id: 'course-v1:org+course+run' },
+    );
+    expect(payload.next).toBeUndefined();
   });
 });

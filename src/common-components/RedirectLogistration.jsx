@@ -11,11 +11,40 @@ const trimTrailingSlash = (url = '') => url.replace(/\/+$/, '');
 
 const getDefaultCatalogUrl = () => getConfig().SEARCH_CATALOG_URL || `${getConfig().LMS_BASE_URL}/courses`;
 
+/**
+ * After registration the LMS usually returns the learner "home" URL (/dashboard), which then
+ * redirects to the learner MFE ("My courses"). Treat that default as the course catalog unless
+ * the user had an explicit ?next= (then the server returns that URL).
+ * Path-based check avoids mismatches when LMS_BASE_URL and the API host differ slightly.
+ */
 const shouldRedirectToCatalog = (redirectUrl = '') => {
-  const normalizedRedirectUrl = trimTrailingSlash(redirectUrl);
-  const normalizedDashboardUrl = trimTrailingSlash(`${getConfig().LMS_BASE_URL}/dashboard`);
+  const raw = (redirectUrl || '').trim();
+  if (!raw) {
+    return true;
+  }
 
-  return !normalizedRedirectUrl || normalizedRedirectUrl === normalizedDashboardUrl;
+  const lmsBase = trimTrailingSlash(getConfig().LMS_BASE_URL || '');
+  const baseForRelative = lmsBase ? `${lmsBase}/` : `${typeof window !== 'undefined' ? window.location.origin : ''}/`;
+
+  let pathname = '';
+  try {
+    if (raw.startsWith('http://') || raw.startsWith('https://')) {
+      pathname = new URL(raw).pathname || '/';
+    } else {
+      pathname = new URL(raw, baseForRelative).pathname || '/';
+    }
+  } catch (e) {
+    pathname = '';
+  }
+
+  const normalizedPath = (pathname || '/').replace(/\/+$/, '') || '/';
+  if (normalizedPath === '/dashboard') {
+    return true;
+  }
+
+  const normalizedRedirectUrl = trimTrailingSlash(raw);
+  const normalizedDashboardUrl = trimTrailingSlash(`${lmsBase}/dashboard`);
+  return normalizedRedirectUrl === normalizedDashboardUrl;
 };
 
 const RedirectLogistration = (props) => {
@@ -87,6 +116,14 @@ const RedirectLogistration = (props) => {
           replace
         />
       );
+    }
+
+    if (registrationEmbedded) {
+      window.parent.postMessage({
+        action: REDIRECT,
+        redirectUrl: finalRedirectUrl,
+      }, host);
+      return null;
     }
 
     window.location.href = finalRedirectUrl;

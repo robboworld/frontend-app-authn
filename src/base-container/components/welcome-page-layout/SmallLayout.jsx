@@ -24,7 +24,7 @@ const SmallLayout = ({ fullName }) => {
           </h1>
           <h2 className="h1">
             {formatMessage(messages['complete.your.profile.1'])}
-            <div className="text-accent-a">
+            <div className="robbo-welcome-profile-accent">
               {formatMessage(messages['complete.your.profile.2'])}
             </div>
           </h2>

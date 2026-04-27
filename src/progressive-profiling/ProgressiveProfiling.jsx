@@ -224,7 +224,7 @@ const ProgressiveProfiling = (props) => {
         ) : (
           <>
             <div>
-              <h2 className="pp-page__heading text-primary">{formatMessage(messages['progressive.profiling.page.heading'])}</h2>
+              <h2 className="pp-page__heading">{formatMessage(messages['progressive.profiling.page.heading'])}</h2>
             </div><hr className="border-light-700 mb-4" />
             {showError ? (
               <Alert id="pp-page-errors" className="mb-3" variant="danger" icon={Error}>

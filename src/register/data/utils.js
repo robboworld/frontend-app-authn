@@ -139,5 +139,18 @@ export const prepareRegistrationPayload = (
 
   // add query params to the payload
   payload = { ...payload, ...queryParams };
+
+  // Default post-registration destination: course catalog. Skip when enrollment / purchase
+  // query params are present so the LMS finish_auth flow keeps the right next= chain.
+  const enrollmentOrPurchaseKeys = [
+    'course_id', 'enrollment_action', 'course_mode', 'email_opt_in', 'purchase_workflow',
+  ];
+  const hasEnrollmentContext = enrollmentOrPurchaseKeys.some(
+    (k) => queryParams[k] != null && queryParams[k] !== '',
+  );
+  if (!hasEnrollmentContext && (payload.next == null || payload.next === '')) {
+    payload.next = '/courses';
+  }
+
   return payload;
 };

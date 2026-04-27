@@ -10,6 +10,7 @@
     font-size: 1.375rem;
     margin-bottom: 0.5rem;
     font-weight: 700;
+    color: $robbo-brand-primary;
 
     @include media-breakpoint-down('md') {
       line-height: 1.5rem;

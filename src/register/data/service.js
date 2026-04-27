@@ -18,8 +18,11 @@ export async function registerRequest(registrationInformation) {
       throw (e);
     });
 
+  const lms = getConfig().LMS_BASE_URL;
+  const defaultAfterRegister = getConfig().SEARCH_CATALOG_URL || `${lms}/courses`;
+
   return {
-    redirectUrl: data.redirect_url || `${getConfig().LMS_BASE_URL}/dashboard`,
+    redirectUrl: data.redirect_url || defaultAfterRegister,
     // Treat a successful HTTP response as a successful registration even if
     // an older/custom backend omits the legacy `success` flag.
     success: data.success ?? true,

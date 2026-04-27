@@ -359,9 +359,7 @@ const RegistrationPage = (props) => {
           finishAuthUrl={finishAuthUrl}
           optionalFields={optionalFields}
           registrationEmbedded={registrationEmbedded}
-          redirectToProgressiveProfilingPage={
-            getConfig().ENABLE_PROGRESSIVE_PROFILING_ON_AUTHN && !!Object.keys(optionalFields.fields).length
-          }
+          redirectToProgressiveProfilingPage={false}
         />
         {autoSubmitRegForm && !errorCode.type ? (
           <div className="mw-xs mt-5 text-center">

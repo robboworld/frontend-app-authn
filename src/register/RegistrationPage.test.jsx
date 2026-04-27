@@ -539,6 +539,28 @@ describe('RegistrationPage', () => {
       expect(window.location.href).toBe('https://test.com/courses/');
     });
 
+    it('should redirect to catalog when API returns /dashboard on a different host than LMS_BASE_URL (path match)', () => {
+      getLocale.mockImplementation(() => ('en-us'));
+      mergeConfig({
+        LMS_BASE_URL: 'https://lms.mismatch.test',
+        SEARCH_CATALOG_URL: '',
+      });
+      store = mockStore({
+        ...initialState,
+        register: {
+          ...initialState.register,
+          registrationResult: {
+            success: true,
+            redirectUrl: 'https://api-lms:18000/dashboard',
+          },
+        },
+      });
+      delete window.location;
+      window.location = { href: getConfig().BASE_URL };
+      render(routerWrapper(reduxWrapper(<IntlRegistrationPage {...props} />)));
+      expect(window.location.href).toBe('https://lms.mismatch.test/courses');
+    });
+
     it('should redirect to dashboard if features flags are configured but no optional fields are configured', () => {
       mergeConfig({
         ENABLE_PROGRESSIVE_PROFILING_ON_AUTHN: true,
@@ -566,10 +588,12 @@ describe('RegistrationPage', () => {
       expect(window.location.href).toBe(dashboardUrl);
     });
 
-    it('should redirect to progressive profiling page if optional fields are configured', () => {
+    it('should redirect to catalog after registration when optional fields are configured (welcome page skipped)', () => {
       getLocale.mockImplementation(() => ('en-us'));
       mergeConfig({
         ENABLE_PROGRESSIVE_PROFILING_ON_AUTHN: true,
+        LMS_BASE_URL: 'https://test.com',
+        SEARCH_CATALOG_URL: 'https://test.com/courses/',
       });
 
       store = mockStore({
@@ -578,6 +602,7 @@ describe('RegistrationPage', () => {
           ...initialState.register,
           registrationResult: {
             success: true,
+            redirectUrl: 'https://test.com/dashboard',
           },
         },
         commonComponents: {
@@ -590,13 +615,10 @@ describe('RegistrationPage', () => {
           },
         },
       });
-
-      render(reduxWrapper(
-        <Router>
-          <IntlRegistrationPage {...props} />
-        </Router>,
-      ));
-      expect(mockNavigate).toHaveBeenCalledWith(AUTHN_PROGRESSIVE_PROFILING);
+      delete window.location;
+      window.location = { href: getConfig().BASE_URL };
+      render(routerWrapper(reduxWrapper(<IntlRegistrationPage {...props} />)));
+      expect(window.location.href).toBe('https://test.com/courses/');
     });
 
     // ******** miscellaneous tests ********
@@ -731,6 +753,8 @@ describe('RegistrationPage', () => {
       getLocale.mockImplementation(() => ('en-us'));
       mergeConfig({
         ENABLE_PROGRESSIVE_PROFILING_ON_AUTHN: true,
+        LMS_BASE_URL: 'https://test.com',
+        SEARCH_CATALOG_URL: 'https://test.com/courses/',
       });
 
       window.parent.postMessage = jest.fn();
@@ -744,6 +768,7 @@ describe('RegistrationPage', () => {
           ...initialState.register,
           registrationResult: {
             success: true,
+            redirectUrl: 'https://test.com/dashboard',
           },
         },
         commonComponents: {
@@ -757,7 +782,10 @@ describe('RegistrationPage', () => {
         },
       });
       render(routerWrapper(reduxWrapper(<IntlRegistrationPage {...props} />)));
-      expect(window.parent.postMessage).toHaveBeenCalledTimes(2);
+      expect(window.parent.postMessage).toHaveBeenCalledWith(
+        { action: 'redirect', redirectUrl: 'https://test.com/courses/' },
+        'http://localhost/host-website',
+      );
     });
 
     it('should not display validations error on blur event when embedded variant is rendered', () => {
