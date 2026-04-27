@@ -106,9 +106,13 @@ const ConfigurableRegistrationForm = (props) => {
   };
 
   const handleOnBlur = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type } = event.target;
     let error = '';
-    if ((!value || !value.trim()) && fieldDescriptions[name]?.error_message) {
+    if (type === 'checkbox') {
+      if (!event.target.checked && fieldDescriptions[name]?.error_message) {
+        error = fieldDescriptions[name].error_message;
+      }
+    } else if ((!value || !String(value).trim()) && fieldDescriptions[name]?.error_message) {
       error = fieldDescriptions[name].error_message;
     } else if (name === 'confirm_email' && value !== email) {
       error = formatMessage(messages['email.do.not.match']);
@@ -141,6 +145,8 @@ const ConfigurableRegistrationForm = (props) => {
                   fieldType={fieldData.type}
                   value={formFields[fieldData.name]}
                   onChangeHandler={handleOnChange}
+                  onBlur={handleOnBlur}
+                  onFocus={handleOnFocus}
                   errorMessage={fieldErrors[fieldData.name]}
                 />
               </span>,
@@ -158,6 +164,13 @@ const ConfigurableRegistrationForm = (props) => {
             </span>,
           );
           break;
+        case 'marketingEmailsOptIn':
+          // Robbo: то же поле вынесено ниже с полным label (registration.opt.in.label); иначе default
+          // рисует второй (пустой) чекбокс, т.к. в merge нет fieldData.label.
+          if (flags.showMarketingEmailOptInCheckbox) {
+            break;
+          }
+        // eslint-disable-next-line no-fallthrough
         default:
           formFieldDescriptions.push(
             <span key={fieldData.name}>
@@ -193,12 +206,13 @@ const ConfigurableRegistrationForm = (props) => {
   }
 
   if (flags.showMarketingEmailOptInCheckbox) {
+    const marketingRequired = Boolean(fieldDescriptions?.marketingEmailsOptIn);
     formFieldDescriptions.push(
       <span key="marketing_email_opt_in">
         <FormFieldRenderer
           fieldData={{
             type: 'checkbox',
-            label: formatMessage(messages['registration.opt.in.label'], { siteName: getConfig().SITE_NAME }),
+            label: formatMessage(messages['registration.opt.in.label']),
             name: 'marketingEmailsOptIn',
           }}
           value={formFields.marketingEmailsOptIn}
@@ -206,6 +220,8 @@ const ConfigurableRegistrationForm = (props) => {
           onChangeHandler={handleOnChange}
           handleBlur={handleOnBlur}
           handleFocus={handleOnFocus}
+          errorMessage={fieldErrors.marketingEmailsOptIn}
+          isRequired={marketingRequired}
         />
       </span>,
     );
@@ -214,7 +230,14 @@ const ConfigurableRegistrationForm = (props) => {
   if (flags.showConfigurableEdxFields || showTermsOfServiceAndHonorCode) {
     formFieldDescriptions.push(
       <span key="honor_code">
-        <HonorCode fieldType="tos_and_honor_code" onChangeHandler={handleOnChange} value={formFields.honor_code} />
+        <HonorCode
+          fieldType="tos_and_honor_code"
+          onChangeHandler={handleOnChange}
+          onBlur={handleOnBlur}
+          onFocus={handleOnFocus}
+          value={formFields.honor_code}
+          errorMessage={fieldErrors.honor_code}
+        />
       </span>,
     );
   }

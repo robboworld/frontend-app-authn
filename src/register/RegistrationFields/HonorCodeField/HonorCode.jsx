@@ -10,7 +10,7 @@ import messages from '../../messages';
 const HonorCode = (props) => {
   const { formatMessage } = useIntl();
   const {
-    errorMessage, onChangeHandler, fieldType, value,
+    errorMessage, onChangeHandler, onBlur, onFocus, fieldType, value,
   } = props;
 
   const agreeUrl = getConfig().TOS_AND_HONOR_CODE || '#';
@@ -18,13 +18,16 @@ const HonorCode = (props) => {
 
   if (fieldType === 'tos_and_honor_code') {
     return (
-      <div id="honor-code" className="robbo-honor-consent micro text-muted mt-2">
+      <Form.Group isInvalid={Boolean(errorMessage)} className="robbo-honor-consent micro text-muted mt-2" id="honor-code">
         <Form.Checkbox
           className="form-field--checkbox mt-0"
           id="honor-code-tos"
           checked={Boolean(value)}
           name="honor_code"
           onChange={onChangeHandler}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          aria-invalid={Boolean(errorMessage)}
         >
           <FormattedMessage
             id="registration.robbo.honor.consent"
@@ -70,7 +73,7 @@ const HonorCode = (props) => {
             {errorMessage}
           </Form.Control.Feedback>
         )}
-      </div>
+      </Form.Group>
     );
   }
 
@@ -83,6 +86,8 @@ const HonorCode = (props) => {
         name="honor_code"
         value={value}
         onChange={onChangeHandler}
+        onBlur={onBlur}
+        onFocus={onFocus}
       >
         <FormattedMessage
           id="register.page.honor.code"
@@ -110,6 +115,8 @@ const HonorCode = (props) => {
 HonorCode.defaultProps = {
   errorMessage: '',
   onChangeHandler: null,
+  onBlur: null,
+  onFocus: null,
   fieldType: 'honor_code',
   value: false,
 };
@@ -117,6 +124,8 @@ HonorCode.defaultProps = {
 HonorCode.propTypes = {
   errorMessage: PropTypes.string,
   onChangeHandler: PropTypes.func,
+  onBlur: PropTypes.func,
+  onFocus: PropTypes.func,
   fieldType: PropTypes.string,
   value: PropTypes.bool,
 };

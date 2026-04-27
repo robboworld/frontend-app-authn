@@ -79,7 +79,9 @@ const RegistrationPage = (props) => {
 
   const fieldDescriptions = useSelector(state => state.commonComponents.fieldDescriptions);
   const registrationFieldDescriptions = useMemo(
-    () => mergeRobboRegistrationFieldDescriptions(fieldDescriptions, formatMessage),
+    () => mergeRobboRegistrationFieldDescriptions(fieldDescriptions, formatMessage, {
+      requireMarketingOptIn: getConfig().MARKETING_EMAILS_OPT_IN,
+    }),
     [fieldDescriptions, formatMessage],
   );
   const optionalFields = useSelector(state => state.commonComponents.optionalFields);

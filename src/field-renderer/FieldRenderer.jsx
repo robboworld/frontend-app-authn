@@ -10,6 +10,9 @@ const FormFieldRenderer = (props) => {
     className, errorMessage, fieldData, onChangeHandler, isRequired, value,
   } = props;
 
+  // Match FormGroup (Email/Username/Password): same control class so floating-label fields span full form width
+  const controlClassName = ['form-group__form-field', className].filter(Boolean).join(' ');
+
   const handleFocus = (e) => {
     if (props.handleFocus) { props.handleFocus(e); }
   };
@@ -26,7 +29,7 @@ const FormFieldRenderer = (props) => {
       formField = (
         <Form.Group controlId={fieldData.name} isInvalid={!!(isRequired && errorMessage)}>
           <Form.Control
-            className={className}
+            className={controlClassName}
             as="select"
             name={fieldData.name}
             value={value}
@@ -55,7 +58,7 @@ const FormFieldRenderer = (props) => {
       formField = (
         <Form.Group controlId={fieldData.name} isInvalid={!!(isRequired && errorMessage)}>
           <Form.Control
-            className={className}
+            className={controlClassName}
             as="textarea"
             name={fieldData.name}
             value={value}
@@ -78,7 +81,7 @@ const FormFieldRenderer = (props) => {
       formField = (
         <Form.Group controlId={fieldData.name} isInvalid={!!(isRequired && errorMessage)}>
           <Form.Control
-            className={className}
+            className={controlClassName}
             name={fieldData.name}
             value={value}
             aria-invalid={isRequired && Boolean(errorMessage)}

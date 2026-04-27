@@ -74,6 +74,48 @@ describe('Payload validation', () => {
     expect(fieldErrors.password).toBeDefined();
     expect(isValid).toBe(false);
   });
+
+  test('requires marketing opt-in when described in fieldDescriptions', () => {
+    const payload = { name: 'Valid User', email: 'a@b.co', username: 'user1', password: 'a1b2c3d4' };
+    const errors = {};
+    const fieldDescriptions = {
+      marketingEmailsOptIn: {
+        name: 'marketingEmailsOptIn',
+        type: 'checkbox',
+        error_message: 'marketing-required',
+      },
+    };
+    const { isValid, fieldErrors } = isFormValid(
+      payload,
+      errors,
+      { ...configurableFormFields, marketingEmailsOptIn: false },
+      fieldDescriptions,
+      formatMessage,
+    );
+    expect(fieldErrors.marketingEmailsOptIn).toBe('marketing-required');
+    expect(isValid).toBe(false);
+  });
+
+  test('passes when marketing opt-in is checked and described as required', () => {
+    const payload = { name: 'Valid User', email: 'a@b.co', username: 'user1', password: 'a1b2c3d4' };
+    const errors = {};
+    const fieldDescriptions = {
+      marketingEmailsOptIn: {
+        name: 'marketingEmailsOptIn',
+        type: 'checkbox',
+        error_message: 'marketing-required',
+      },
+    };
+    const { isValid, fieldErrors } = isFormValid(
+      payload,
+      errors,
+      { marketingEmailsOptIn: true },
+      fieldDescriptions,
+      formatMessage,
+    );
+    expect(fieldErrors.marketingEmailsOptIn).toBeUndefined();
+    expect(isValid).toBe(true);
+  });
 });
 
 describe('prepareRegistrationPayload', () => {

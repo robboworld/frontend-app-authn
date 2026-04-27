@@ -58,8 +58,8 @@ const messages = defineMessages({
   },
   'one.letter': {
     id: 'one.letter',
-    defaultMessage: '1 letter',
-    description: 'password requirement to have 1 letter',
+    defaultMessage: '1 Latin letter',
+    description: 'password requirement to have 1 Latin letter (A–Z, a–z)',
   },
   'one.number': {
     id: 'one.number',
@@ -73,7 +73,7 @@ const messages = defineMessages({
   },
   'password.sr.only.helping.text': {
     id: 'password.sr.only.helping.text',
-    defaultMessage: 'Password must contain at least 8 characters, at least one letter, and at least one number',
+    defaultMessage: 'Password must contain at least 8 characters, at least one Latin letter (A–Z, a–z), and at least one number',
     description: 'Password helping text for the sr-only class',
   },
   // third party auth

@@ -34,8 +34,8 @@ const messages = defineMessages({
   },
   'registration.opt.in.label': {
     id: 'registration.opt.in.label',
-    defaultMessage: 'I agree that {siteName} may send me marketing messages',
-    description: 'Text for opt in option on register page, aligned with guest landing.',
+    defaultMessage: 'I agree to receive news and marketing emails',
+    description: 'Text for opt in option on register page (guest landing: Я согласен(а) получать новости и рекламные рассылки).',
   },
   'registration.robbo.honor.consent': {
     id: 'registration.robbo.honor.consent',
@@ -61,6 +61,11 @@ const messages = defineMessages({
     id: 'registration.robbo.honor.required_error',
     defaultMessage: 'You must accept consent for the processing of your personal data',
     description: 'Validation when honor checkbox is not accepted (Robbo fallback)',
+  },
+  'registration.robbo.marketing.required_error': {
+    id: 'registration.robbo.marketing.required_error',
+    defaultMessage: 'You must agree to receive news and marketing emails',
+    description: 'Validation when marketing opt-in is required and not checked (Robbo / guest landing parity)',
   },
   'registration.robbo.company.required_error': {
     id: 'registration.robbo.company.required_error',

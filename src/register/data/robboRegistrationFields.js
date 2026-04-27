@@ -10,10 +10,21 @@ import messages from '../messages';
  *
  * @param {Object|null|undefined} apiFields  fieldDescriptions from Redux (mfe_context.fields)
  * @param {function} formatMessage         react-intl formatMessage
+ * @param {Object} [options]
+ * @param {boolean} [options.requireMarketingOptIn]  если true — чекбокс рассылок обязателен (как на гостевом лендинге)
  * @returns {Object}
  */
-export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage) {
+export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage, options = {}) {
+  const { requireMarketingOptIn = false } = options;
   const d = { ...(apiFields && typeof apiFields === 'object' ? apiFields : {}) };
+
+  if (requireMarketingOptIn) {
+    d.marketingEmailsOptIn = {
+      name: 'marketingEmailsOptIn',
+      type: 'checkbox',
+      error_message: formatMessage(messages['registration.robbo.marketing.required_error']),
+    };
+  }
 
   if (!d.honor_code) {
     d.honor_code = {
