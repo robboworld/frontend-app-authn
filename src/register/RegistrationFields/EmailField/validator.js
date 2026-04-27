@@ -34,7 +34,8 @@ export const getSuggestionForInvalidEmail = (domain, username) => {
     return '';
   }
 
-  const defaultDomains = ['yahoo', 'aol', 'hotmail', 'live', 'outlook', 'gmail'];
+  const defaultDomains = ['mail.ru', 'mail', 'ya.ru', 'yandex.ru', 'gmail.com', 'yahoo.com', 'hotmail.com', 'live.com', 'outlook.com'];
+  //const defaultDomains = ['yahoo', 'aol', 'hotmail', 'live', 'outlook', 'gmail'];
   const suggestion = getLevenshteinSuggestion(domain, COMMON_EMAIL_PROVIDERS);
 
   if (suggestion) {

@@ -169,7 +169,7 @@
   "reset.password.success": "Пароль сброшен. Войдите в аккаунт.",
   "rate.limit.error": "Слишком много запросов. Попробуйте позже.",
   "start.learning": "Начать обучение",
-  "with.site.name": "на {siteName}",
+  "with.site.name": "с {siteName}",
   "your.career.turning.point": "Поворотный момент в карьере",
   "is.here": "— здесь.",
   "welcome.to.platform": "Добро пожаловать на {siteName}, {fullName}!",
