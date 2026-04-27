@@ -31,6 +31,7 @@ const ConfigurableRegistrationForm = (props) => {
     setFieldErrors,
     setFormFields,
     autoSubmitRegistrationForm,
+    onDismissRegistrationFailure,
   } = props;
 
   /** The reason for adding the entry 'United States' is that Chrome browser aut-fill the form with the 'Unites
@@ -44,8 +45,14 @@ const ConfigurableRegistrationForm = (props) => {
 
   const formFieldDescriptions = [];
   const honorCode = [];
+  const hasDynamicApiFields = fieldDescriptions && Object.keys(fieldDescriptions).length > 0;
   const flags = {
-    showConfigurableRegistrationFields: getConfig().ENABLE_DYNAMIC_REGISTRATION_FIELDS,
+    // Treat as on if config says so OR backend already sent registration field descriptions
+    // (avoids empty form when process.env was stripped at MFE build time).
+    showConfigurableRegistrationFields: (
+      getConfig().ENABLE_DYNAMIC_REGISTRATION_FIELDS
+      || hasDynamicApiFields
+    ),
     showConfigurableEdxFields: getConfig().SHOW_CONFIGURABLE_EDX_FIELDS,
     showMarketingEmailOptInCheckbox: getConfig().MARKETING_EMAILS_OPT_IN,
   };
@@ -80,6 +87,11 @@ const ConfigurableRegistrationForm = (props) => {
   };
 
   const handleOnChange = (event, countryValue = null) => {
+    if (countryValue) {
+      onDismissRegistrationFailure?.();
+    } else if (event.target.type !== 'checkbox') {
+      onDismissRegistrationFailure?.();
+    }
     const { name } = event.target;
     let value;
     if (countryValue) {
@@ -105,6 +117,9 @@ const ConfigurableRegistrationForm = (props) => {
   };
 
   const handleOnFocus = (event) => {
+    if (event.target.type !== 'checkbox') {
+      onDismissRegistrationFailure?.();
+    }
     const { name } = event.target;
     setFieldErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
   };
@@ -231,11 +246,13 @@ ConfigurableRegistrationForm.propTypes = {
   setFieldErrors: PropTypes.func.isRequired,
   setFormFields: PropTypes.func.isRequired,
   autoSubmitRegistrationForm: PropTypes.bool,
+  onDismissRegistrationFailure: PropTypes.func,
 };
 
 ConfigurableRegistrationForm.defaultProps = {
   fieldDescriptions: {},
   autoSubmitRegistrationForm: false,
+  onDismissRegistrationFailure: null,
 };
 
 export default ConfigurableRegistrationForm;

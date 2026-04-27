@@ -10,22 +10,22 @@ const messages = defineMessages({
   'registration.fullname.label': {
     id: 'registration.fullname.label',
     defaultMessage: 'Full name',
-    description: 'Label that appears above fullname field',
+    description: 'Label / floating label for full name (Robbo)',
   },
   'registration.email.label': {
     id: 'registration.email.label',
     defaultMessage: 'Email',
-    description: 'Label that appears above email field on register page',
+    description: 'Label / floating label for email (Robbo)',
   },
   'registration.username.label': {
     id: 'registration.username.label',
-    defaultMessage: 'Public username',
-    description: 'Label that appears above username field',
+    defaultMessage: 'Choose a username',
+    description: 'Label / floating label for username (Robbo)',
   },
   'registration.password.label': {
     id: 'registration.password.label',
-    defaultMessage: 'Password',
-    description: 'Label that appears above password field',
+    defaultMessage: 'Create a password',
+    description: 'Label / floating label for password (Robbo)',
   },
   'registration.country.label': {
     id: 'registration.country.label',
@@ -34,28 +34,38 @@ const messages = defineMessages({
   },
   'registration.opt.in.label': {
     id: 'registration.opt.in.label',
-    defaultMessage: 'Я согласен(а) получать новости и рекламные рассылки',
+    defaultMessage: 'I agree that {siteName} may send me marketing messages',
     description: 'Text for opt in option on register page, aligned with guest landing.',
   },
   'registration.robbo.honor.consent': {
     id: 'registration.robbo.honor.consent',
-    defaultMessage: 'Я даю согласие на {personalDataLink} на условиях {privacyLink}',
+    defaultMessage: 'I give consent to {personalDataLink} on the terms of {privacyLink}',
     description: 'Robbo: honor_code checkbox, aligned with guest landing #registration',
   },
   'registration.robbo.honor.personal_data': {
     id: 'registration.robbo.honor.personal_data',
-    defaultMessage: 'обработку своих персональных данных',
+    defaultMessage: 'the processing of my personal data',
     description: 'Link text for personal data document (Robbo landing)',
   },
   'registration.robbo.honor.privacy': {
     id: 'registration.robbo.honor.privacy',
-    defaultMessage: 'политики конфиденциальности',
+    defaultMessage: 'the privacy policy',
     description: 'Link text for privacy document (Robbo landing)',
   },
   'registration.robbo.company.label': {
     id: 'registration.robbo.company.label',
-    defaultMessage: 'Название компании',
+    defaultMessage: 'Company name',
     description: 'Company field label, aligned with guest landing',
+  },
+  'registration.robbo.honor.required_error': {
+    id: 'registration.robbo.honor.required_error',
+    defaultMessage: 'You must accept consent for the processing of your personal data',
+    description: 'Validation when honor checkbox is not accepted (Robbo fallback)',
+  },
+  'registration.robbo.company.required_error': {
+    id: 'registration.robbo.company.required_error',
+    defaultMessage: 'Please enter a company name',
+    description: 'Validation for company when required (Robbo fallback)',
   },
   // Help text
   'help.text.name': {

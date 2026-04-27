@@ -7,3 +7,6 @@ $authn-form-stack-max-width: 464px;
 
 // Below xl: hero + white card stack; cap hero line length for centered heading.
 $authn-stack-hero-max-width: 36rem;
+
+// LMS `robbo-theme` primary; Paragon checkboxes default to `$component-active-bg` (typically blue).
+$robbo-brand-primary: #15803d;

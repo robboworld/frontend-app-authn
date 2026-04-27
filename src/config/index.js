@@ -1,3 +1,10 @@
+/**
+ * In Tutor/bundled MFE, `process.env.FEATURE_FLAG` is often undefined at build time.
+ * Robbo defaults: dynamic registration + marketing opt-in *checkbox* on unless env explicitly 'false'.
+ * (Redux `marketingEmailsOptIn` default remains false so the box is unchecked until the user opts in.)
+ */
+const envIsExplicitlyOff = (v) => v === false || v === 'false' || v === '0';
+
 const configuration = {
   // Cookies related configs
   SESSION_COOKIE_DOMAIN: process.env.SESSION_COOKIE_DOMAIN,
@@ -5,10 +12,10 @@ const configuration = {
   // Features
   DISABLE_ENTERPRISE_LOGIN: process.env.DISABLE_ENTERPRISE_LOGIN || '',
   ENABLE_AUTO_GENERATED_USERNAME: process.env.ENABLE_AUTO_GENERATED_USERNAME || false,
-  ENABLE_DYNAMIC_REGISTRATION_FIELDS: process.env.ENABLE_DYNAMIC_REGISTRATION_FIELDS || false,
+  ENABLE_DYNAMIC_REGISTRATION_FIELDS: !envIsExplicitlyOff(process.env.ENABLE_DYNAMIC_REGISTRATION_FIELDS),
   ENABLE_PROGRESSIVE_PROFILING_ON_AUTHN: process.env.ENABLE_PROGRESSIVE_PROFILING_ON_AUTHN || false,
   ENABLE_POST_REGISTRATION_RECOMMENDATIONS: process.env.ENABLE_POST_REGISTRATION_RECOMMENDATIONS || false,
-  MARKETING_EMAILS_OPT_IN: process.env.MARKETING_EMAILS_OPT_IN || '',
+  MARKETING_EMAILS_OPT_IN: !envIsExplicitlyOff(process.env.MARKETING_EMAILS_OPT_IN),
   SHOW_CONFIGURABLE_EDX_FIELDS: process.env.SHOW_CONFIGURABLE_EDX_FIELDS || false,
   SHOW_REGISTRATION_LINKS: process.env.SHOW_REGISTRATION_LINKS !== 'false',
   ENABLE_IMAGE_LAYOUT: process.env.ENABLE_IMAGE_LAYOUT || false,

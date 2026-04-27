@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useMemo, useState,
+  useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -27,6 +27,7 @@ import {
   TPA_AUTHENTICATION_FAILURE,
 } from './data/constants';
 import getBackendValidations from './data/selectors';
+import { mergeRobboRegistrationFieldDescriptions } from './data/robboRegistrationFields';
 import {
   isFormValid, prepareRegistrationPayload,
 } from './data/utils';
@@ -77,6 +78,10 @@ const RegistrationPage = (props) => {
   const submitState = useSelector(state => state.register.submitState);
 
   const fieldDescriptions = useSelector(state => state.commonComponents.fieldDescriptions);
+  const registrationFieldDescriptions = useMemo(
+    () => mergeRobboRegistrationFieldDescriptions(fieldDescriptions, formatMessage),
+    [fieldDescriptions, formatMessage],
+  );
   const optionalFields = useSelector(state => state.commonComponents.optionalFields);
   const thirdPartyAuthApiStatus = useSelector(state => state.commonComponents.thirdPartyAuthApiStatus);
   const autoSubmitRegForm = useSelector(state => state.commonComponents.thirdPartyAuthContext.autoSubmitRegForm);
@@ -92,22 +97,22 @@ const RegistrationPage = (props) => {
   const tpaHint = useMemo(() => getTpaHint(), []);
 
   const fieldDescriptionsWithoutCompany = useMemo(() => {
-    if (!fieldDescriptions?.company) {
-      return fieldDescriptions;
+    if (!registrationFieldDescriptions?.company) {
+      return registrationFieldDescriptions;
     }
-    const { company, ...rest } = fieldDescriptions;
+    const { company, ...rest } = registrationFieldDescriptions;
     return rest;
-  }, [fieldDescriptions]);
+  }, [registrationFieldDescriptions]);
 
   const companyFieldData = useMemo(() => {
-    if (!fieldDescriptions?.company) {
+    if (!registrationFieldDescriptions?.company) {
       return null;
     }
     return {
-      ...fieldDescriptions.company,
+      ...registrationFieldDescriptions.company,
       label: formatMessage(messages['registration.robbo.company.label']),
     };
-  }, [fieldDescriptions, formatMessage]);
+  }, [registrationFieldDescriptions, formatMessage]);
 
   const [formFields, setFormFields] = useState({ ...backedUpFormData.formFields });
   const [configurableFormFields, setConfigurableFormFields] = useState({ ...backedUpFormData.configurableFormFields });
@@ -121,6 +126,11 @@ const RegistrationPage = (props) => {
   const buttonLabel = cta
     ? formatMessage(messages['create.account.cta.button'], { label: cta })
     : formatMessage(messages['create.account.for.free.button']);
+
+  const dismissRegistrationFailureBanner = useCallback(() => {
+    setErrorCode({ type: '', count: 0 });
+    dispatch(clearRegistrationBackendError('errorCode'));
+  }, [dispatch]);
 
   /**
    * Set the userPipelineDetails data in formFields for only first time
@@ -188,6 +198,12 @@ const RegistrationPage = (props) => {
   }, [registrationErrorCode]);
 
   useEffect(() => {
+    if (submitState === PENDING_STATE) {
+      setErrorCode({ type: '', count: 0 });
+    }
+  }, [submitState]);
+
+  useEffect(() => {
     if (registrationResult.success) {
       // This event is used by GTM
       sendTrackEvent('edx.bi.user.account.registered.client', {});
@@ -198,6 +214,9 @@ const RegistrationPage = (props) => {
   }, [registrationResult]);
 
   const handleOnChange = (event) => {
+    if (event.target.type !== 'checkbox') {
+      dismissRegistrationFailureBanner();
+    }
     const { name } = event.target;
     const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     if (registrationError[name]) {
@@ -208,6 +227,7 @@ const RegistrationPage = (props) => {
   };
 
   const handleCompanyFieldChange = (event) => {
+    dismissRegistrationFailureBanner();
     const { name, value } = event.target;
     setConfigurableFormFields((prev) => ({ ...prev, [name]: value }));
     if (registrationError[name]) {
@@ -223,8 +243,8 @@ const RegistrationPage = (props) => {
   const handleCompanyFieldBlur = (event) => {
     const { name, value } = event.target;
     let error = '';
-    if ((!value || !value.trim()) && fieldDescriptions[name]?.error_message) {
-      error = fieldDescriptions[name].error_message;
+    if ((!value || !value.trim()) && registrationFieldDescriptions[name]?.error_message) {
+      error = registrationFieldDescriptions[name].error_message;
     }
     if (registrationEmbedded) {
       setTemporaryErrors((prev) => ({ ...prev, [name]: error }));
@@ -234,6 +254,7 @@ const RegistrationPage = (props) => {
   };
 
   const handleCompanyFieldFocus = (event) => {
+    dismissRegistrationFailureBanner();
     const { name } = event.target;
     if (registrationEmbedded) {
       setTemporaryErrors((prev) => ({ ...prev, [name]: '' }));
@@ -243,6 +264,7 @@ const RegistrationPage = (props) => {
   };
 
   const handleErrorChange = (fieldName, error) => {
+    dismissRegistrationFailureBanner();
     if (registrationEmbedded) {
       setTemporaryErrors(prevErrors => ({
         ...prevErrors,
@@ -279,7 +301,7 @@ const RegistrationPage = (props) => {
       payload,
       registrationEmbedded ? temporaryErrors : errors,
       configurableFormFields,
-      fieldDescriptions,
+      registrationFieldDescriptions,
       formatMessage,
     );
     setErrors({ ...fieldErrors });
@@ -305,6 +327,7 @@ const RegistrationPage = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    dismissRegistrationFailureBanner();
     registerUser();
   };
 
@@ -361,7 +384,7 @@ const RegistrationPage = (props) => {
               failureCount={errorCode.count}
               context={{ provider: currentProvider, errorMessage: thirdPartyAuthErrorMessage }}
             />
-            <Form id="registration-form" name="registration-form">
+            <Form id="registration-form" name="registration-form" onSubmit={handleSubmit}>
               <NameField
                 name="name"
                 value={formFields.name}
@@ -382,7 +405,7 @@ const RegistrationPage = (props) => {
                 helpText={[formatMessage(messages['help.text.email'])]}
                 floatingLabel={formatMessage(messages['registration.email.label'])}
               />
-              {companyFieldData && flags.showConfigurableRegistrationFields && (
+              {companyFieldData && (
                 <FormFieldRenderer
                   fieldData={companyFieldData}
                   value={configurableFormFields.company ?? ''}
@@ -423,6 +446,7 @@ const RegistrationPage = (props) => {
                 setFormFields={setConfigurableFormFields}
                 autoSubmitRegisterForm={autoSubmitRegForm}
                 fieldDescriptions={fieldDescriptionsWithoutCompany}
+                onDismissRegistrationFailure={dismissRegistrationFailureBanner}
               />
               <StatefulButton
                 id="register-user"
@@ -435,7 +459,6 @@ const RegistrationPage = (props) => {
                   default: buttonLabel,
                   pending: '',
                 }}
-                onClick={handleSubmit}
                 onMouseDown={(e) => e.preventDefault()}
               />
               {!registrationEmbedded && (

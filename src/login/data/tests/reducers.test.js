@@ -2,7 +2,12 @@ import { getConfig } from '@edx/frontend-platform';
 
 import { DEFAULT_REDIRECT_URL, DEFAULT_STATE, PENDING_STATE } from '../../../data/constants';
 import { RESET_PASSWORD } from '../../../reset-password';
-import { BACKUP_LOGIN_DATA, DISMISS_PASSWORD_RESET_BANNER, LOGIN_REQUEST } from '../actions';
+import {
+  BACKUP_LOGIN_DATA,
+  CLEAR_LOGIN_FAILURE_BANNER,
+  DISMISS_PASSWORD_RESET_BANNER,
+  LOGIN_REQUEST,
+} from '../actions';
 import reducer from '../reducers';
 
 describe('login reducer', () => {
@@ -93,16 +98,39 @@ describe('login reducer', () => {
     );
   });
 
-  it('should start the login request', () => {
+  it('should start the login request and clear prior login error', () => {
+    const stateWithError = {
+      ...defaultState,
+      loginErrorCode: 'incorrect-email-or-password',
+      loginErrorContext: { email: 'a@b.c' },
+    };
     const action = {
       type: LOGIN_REQUEST.BEGIN,
     };
 
-    expect(reducer(defaultState, action)).toEqual(
+    expect(reducer(stateWithError, action)).toEqual(
       {
         ...defaultState,
         showResetPasswordSuccessBanner: false,
         submitState: PENDING_STATE,
+        loginErrorCode: '',
+        loginErrorContext: {},
+      },
+    );
+  });
+
+  it('should clear login failure banner', () => {
+    const stateWithError = {
+      ...defaultState,
+      loginErrorCode: 'internal-server-error',
+      loginErrorContext: {},
+    };
+    const action = { type: CLEAR_LOGIN_FAILURE_BANNER };
+    expect(reducer(stateWithError, action)).toEqual(
+      {
+        ...defaultState,
+        loginErrorCode: '',
+        loginErrorContext: {},
       },
     );
   });

@@ -18,9 +18,9 @@ const HonorCode = (props) => {
 
   if (fieldType === 'tos_and_honor_code') {
     return (
-      <div id="honor-code" className="micro text-muted mt-4">
+      <div id="honor-code" className="robbo-honor-consent micro text-muted mt-2">
         <Form.Checkbox
-          className="form-field--checkbox mt-1"
+          className="form-field--checkbox mt-0"
           id="honor-code-tos"
           checked={Boolean(value)}
           name="honor_code"
@@ -29,29 +29,38 @@ const HonorCode = (props) => {
           <FormattedMessage
             id="registration.robbo.honor.consent"
             description="Robbo: same legal links as guest landing #registration"
-            defaultMessage="Я даю согласие на {personalDataLink} на условиях {privacyLink}"
+            defaultMessage="I give consent to {personalDataLink} on the terms of {privacyLink}"
             values={{
+              // Explicit spaces: FormattedMessage + nowrap can collapse spaces next to inline links
               personalDataLink: (
-                <Hyperlink
-                  className="inline-link"
-                  destination={agreeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  showLaunchIcon={false}
-                >
-                  {formatMessage(messages['registration.robbo.honor.personal_data'])}
-                </Hyperlink>
+                <>
+                  {' '}
+                  <Hyperlink
+                    className="inline-link"
+                    destination={agreeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    showLaunchIcon={false}
+                  >
+                    {formatMessage(messages['registration.robbo.honor.personal_data'])}
+                  </Hyperlink>
+                  {' '}
+                </>
               ),
               privacyLink: (
-                <Hyperlink
-                  className="inline-link"
-                  destination={policyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  showLaunchIcon={false}
-                >
-                  {formatMessage(messages['registration.robbo.honor.privacy'])}
-                </Hyperlink>
+                <>
+                  {' '}
+                  <Hyperlink
+                    className="inline-link"
+                    destination={policyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    showLaunchIcon={false}
+                  >
+                    {formatMessage(messages['registration.robbo.honor.privacy'])}
+                  </Hyperlink>
+                  {' '}
+                </>
               ),
             }}
           />
@@ -68,7 +77,7 @@ const HonorCode = (props) => {
   return (
     <div id="honor-code" className="micro text-muted">
       <Form.Checkbox
-        className="form-field--checkbox mt-1"
+        className="form-field--checkbox mt-0"
         id="honor-code"
         checked={value}
         name="honor_code"

@@ -3,6 +3,7 @@ import { AsyncActionType } from '../../data/utils';
 export const BACKUP_LOGIN_DATA = new AsyncActionType('LOGIN', 'BACKUP_LOGIN_DATA');
 export const LOGIN_REQUEST = new AsyncActionType('LOGIN', 'REQUEST');
 export const DISMISS_PASSWORD_RESET_BANNER = 'DISMISS_PASSWORD_RESET_BANNER';
+export const CLEAR_LOGIN_FAILURE_BANNER = 'CLEAR_LOGIN_FAILURE_BANNER';
 
 // Backup login form data
 export const backupLoginForm = () => ({
@@ -36,4 +37,8 @@ export const loginRequestFailure = (loginError) => ({
 
 export const dismissPasswordResetBanner = () => ({
   type: DISMISS_PASSWORD_RESET_BANNER,
+});
+
+export const clearLoginFailureBanner = () => ({
+  type: CLEAR_LOGIN_FAILURE_BANNER,
 });

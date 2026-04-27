@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import { connect } from 'react-redux';
 
 import { getConfig } from '@edx/frontend-platform';
@@ -15,6 +17,7 @@ import { Link } from 'react-router-dom';
 import AccountActivationMessage from './AccountActivationMessage';
 import {
   backupLoginFormBegin,
+  clearLoginFailureBanner,
   dismissPasswordResetBanner,
   loginRequest,
 } from './data/actions';
@@ -67,6 +70,7 @@ const LoginPage = (props) => {
     backupFormState,
     handleInstitutionLogin,
     getTPADataFromBackend,
+    clearLoginFailureAlert,
   } = props;
   const { formatMessage } = useIntl();
   const activationMsgType = getActivationStatus();
@@ -76,6 +80,11 @@ const LoginPage = (props) => {
   const [errorCode, setErrorCode] = useState({ type: '', count: 0, context: {} });
   const [errors, setErrors] = useState({ ...backedUpFormData.errors });
   const tpaHint = getTpaHint();
+
+  const dismissLoginFailureBanner = useCallback(() => {
+    setErrorCode({ type: '', count: 0, context: {} });
+    clearLoginFailureAlert();
+  }, [clearLoginFailureAlert]);
 
   useEffect(() => {
     sendPageEvent('login_and_registration', 'login');
@@ -122,6 +131,12 @@ const LoginPage = (props) => {
     }
   }, [thirdPartyErrorMessage]);
 
+  useEffect(() => {
+    if (submitState === PENDING_STATE) {
+      setErrorCode({ type: '', count: 0, context: {} });
+    }
+  }, [submitState]);
+
   const validateFormFields = (payload) => {
     const { emailOrUsername, password } = payload;
     const fieldErrors = { ...errors };
@@ -140,6 +155,7 @@ const LoginPage = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    dismissLoginFailureBanner();
     if (showResetPasswordSuccessBanner) {
       props.dismissPasswordResetBanner();
     }
@@ -162,11 +178,17 @@ const LoginPage = (props) => {
   };
 
   const handleOnChange = (event) => {
+    if (event.target.type !== 'checkbox') {
+      dismissLoginFailureBanner();
+    }
     const { name, value } = event.target;
     setFormFields(prevState => ({ ...prevState, [name]: value }));
   };
 
   const handleOnFocus = (event) => {
+    if (event.target.type !== 'checkbox') {
+      dismissLoginFailureBanner();
+    }
     const { name } = event.target;
     setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
   };
@@ -326,6 +348,7 @@ LoginPage.propTypes = {
   }),
   // Actions
   backupFormState: PropTypes.func.isRequired,
+  clearLoginFailureAlert: PropTypes.func.isRequired,
   dismissPasswordResetBanner: PropTypes.func.isRequired,
   loginRequest: PropTypes.func.isRequired,
   getTPADataFromBackend: PropTypes.func.isRequired,
@@ -361,6 +384,7 @@ export default connect(
   mapStateToProps,
   {
     backupFormState: backupLoginFormBegin,
+    clearLoginFailureAlert: clearLoginFailureBanner,
     dismissPasswordResetBanner,
     loginRequest,
     getTPADataFromBackend: getThirdPartyAuthContext,

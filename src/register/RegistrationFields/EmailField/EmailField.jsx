@@ -6,7 +6,8 @@ import { Alert, Icon } from '@openedx/paragon';
 import { Close, Error } from '@openedx/paragon/icons';
 import PropTypes from 'prop-types';
 
-import validateEmail from './validator';
+import { REGISTRATION_FIELD_VALIDATION_DEBOUNCE_MS } from '../../data/constants';
+import validateEmail, { emailRegex } from './validator';
 import { FormGroup } from '../../../common-components';
 import {
   clearRegistrationBackendError,
@@ -35,6 +36,7 @@ const EmailField = (props) => {
     handleChange,
     handleErrorChange,
     confirmEmailValue,
+    value: emailValue,
   } = props;
 
   const backedUpFormData = useSelector(state => state.register.registrationFormData);
@@ -45,6 +47,29 @@ const EmailField = (props) => {
   useEffect(() => {
     setEmailSuggestion(backedUpFormData.emailSuggestion);
   }, [backedUpFormData.emailSuggestion]);
+
+  useEffect(() => {
+    if (validationApiRateLimited) {
+      return undefined;
+    }
+    const handle = window.setTimeout(() => {
+      if (!emailValue?.trim()) {
+        return;
+      }
+      const { fieldError } = validateEmail(emailValue, confirmEmailValue, formatMessage);
+      if (fieldError || !emailRegex.test(emailValue)) {
+        return;
+      }
+      dispatch(fetchRealtimeValidations({ email: emailValue }));
+    }, REGISTRATION_FIELD_VALIDATION_DEBOUNCE_MS);
+    return () => window.clearTimeout(handle);
+  }, [
+    emailValue,
+    confirmEmailValue,
+    dispatch,
+    formatMessage,
+    validationApiRateLimited,
+  ]);
 
   const handleOnBlur = (e) => {
     const { value } = e.target;

@@ -6,6 +6,7 @@ import { Button, Icon, IconButton } from '@openedx/paragon';
 import { Close } from '@openedx/paragon/icons';
 import PropTypes from 'prop-types';
 
+import { REGISTRATION_FIELD_VALIDATION_DEBOUNCE_MS } from '../../data/constants';
 import validateUsername from './validator';
 import { FormGroup } from '../../../common-components';
 import {
@@ -53,6 +54,24 @@ const UsernameField = (props) => {
       handleChange({ target: { name: 'username', value: ' ' } });
     }
   }, [handleChange, usernameSuggestions, value]);
+
+  useEffect(() => {
+    if (validationApiRateLimited) {
+      return undefined;
+    }
+    const trimmed = typeof value === 'string' ? value.trim() : '';
+    if (!trimmed || trimmed === ' ' || trimmed.length < 2) {
+      return undefined;
+    }
+    const handle = window.setTimeout(() => {
+      const v = typeof value === 'string' ? value.trim() : '';
+      if (!v || v === ' ' || validateUsername(v, formatMessage)) {
+        return;
+      }
+      dispatch(fetchRealtimeValidations({ username: v }));
+    }, REGISTRATION_FIELD_VALIDATION_DEBOUNCE_MS);
+    return () => window.clearTimeout(handle);
+  }, [value, dispatch, formatMessage, validationApiRateLimited]);
 
   const handleOnBlur = (event) => {
     const { value: username } = event.target;

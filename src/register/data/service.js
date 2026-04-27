@@ -20,7 +20,9 @@ export async function registerRequest(registrationInformation) {
 
   return {
     redirectUrl: data.redirect_url || `${getConfig().LMS_BASE_URL}/dashboard`,
-    success: data.success || false,
+    // Treat a successful HTTP response as a successful registration even if
+    // an older/custom backend omits the legacy `success` flag.
+    success: data.success ?? true,
     authenticatedUser: data.authenticated_user,
   };
 }

@@ -245,7 +245,7 @@ describe('Registration Reducer Tests', () => {
   it('should reset email error field data on focus of email field', () => {
     const state = {
       ...defaultState,
-      registrationError: { email: `This email is already associated with an existing or previous ${ getConfig().SITE_NAME } account` },
+      registrationError: { email: `This email is already associated with an existing or previous ${getConfig().SITE_NAME} account` },
     };
     const action = {
       type: REGISTRATION_CLEAR_BACKEND_ERROR,

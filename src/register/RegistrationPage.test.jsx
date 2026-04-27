@@ -127,6 +127,9 @@ describe('RegistrationPage', () => {
       handleInstitutionLogin: jest.fn(),
       institutionLogin: false,
     };
+    mergeConfig({
+      SEARCH_CATALOG_URL: '',
+    });
     window.location = { search: '' };
   });
 
@@ -512,6 +515,28 @@ describe('RegistrationPage', () => {
       window.location = { href: getConfig().BASE_URL };
       render(routerWrapper(reduxWrapper(<IntlRegistrationPage {...props} />)));
       expect(window.location.href).toBe(dashboardURL);
+    });
+
+    it('should redirect to catalog when registration result points to the default dashboard', () => {
+      getLocale.mockImplementation(() => ('en-us'));
+      mergeConfig({
+        LMS_BASE_URL: 'https://test.com',
+        SEARCH_CATALOG_URL: 'https://test.com/courses/',
+      });
+      store = mockStore({
+        ...initialState,
+        register: {
+          ...initialState.register,
+          registrationResult: {
+            success: true,
+            redirectUrl: 'https://test.com/dashboard',
+          },
+        },
+      });
+      delete window.location;
+      window.location = { href: getConfig().BASE_URL };
+      render(routerWrapper(reduxWrapper(<IntlRegistrationPage {...props} />)));
+      expect(window.location.href).toBe('https://test.com/courses/');
     });
 
     it('should redirect to dashboard if features flags are configured but no optional fields are configured', () => {

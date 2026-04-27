@@ -1,5 +1,6 @@
 import {
   BACKUP_LOGIN_DATA,
+  CLEAR_LOGIN_FAILURE_BANNER,
   DISMISS_PASSWORD_RESET_BANNER,
   LOGIN_REQUEST,
 } from './actions';
@@ -40,6 +41,8 @@ const reducer = (state = defaultState, action = {}) => {
         ...state,
         showResetPasswordSuccessBanner: false,
         submitState: PENDING_STATE,
+        loginErrorCode: '',
+        loginErrorContext: {},
       };
     case LOGIN_REQUEST.SUCCESS:
       return {
@@ -69,6 +72,12 @@ const reducer = (state = defaultState, action = {}) => {
         showResetPasswordSuccessBanner: false,
       };
     }
+    case CLEAR_LOGIN_FAILURE_BANNER:
+      return {
+        ...state,
+        loginErrorCode: '',
+        loginErrorContext: {},
+      };
     default:
       return {
         ...state,

@@ -112,15 +112,13 @@
 .robbo-auth-standalone-shell #main .layout {
   position: relative;
   /* Stronger green wash than base `.layout` so the split reads clearly next to the white form column. */
-  background: linear-gradient(
-    180deg,
-    #bbf7d0 0%,
-    #d1fae5 22%,
-    #ecfdf5 48%,
-    #f0fdf4 72%,
-    #fafefa 92%,
-    #ffffff 100%
-  );
+  background: linear-gradient(180deg,
+      #bbf7d0 0%,
+      #d1fae5 22%,
+      #ecfdf5 48%,
+      #f0fdf4 72%,
+      #fafefa 92%,
+      #ffffff 100%);
   box-sizing: border-box;
   min-height: 100vh;
   min-height: 100dvh;
@@ -149,13 +147,11 @@
   width: min(82vw, 600px);
   height: min(82vw, 600px);
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 40% 40%,
-    rgba(22, 163, 74, 0.42) 0%,
-    rgba(74, 222, 128, 0.52) 32%,
-    rgba(187, 247, 208, 0.5) 52%,
-    rgba(255, 255, 255, 0) 74%
-  );
+  background: radial-gradient(circle at 40% 40%,
+      rgba(22, 163, 74, 0.42) 0%,
+      rgba(74, 222, 128, 0.52) 32%,
+      rgba(187, 247, 208, 0.5) 52%,
+      rgba(255, 255, 255, 0) 74%);
   filter: blur(30px);
   pointer-events: none;
   z-index: 0;
@@ -168,6 +164,7 @@
 }
 
 @media (min-width: 1200px) {
+
   /*
    * Right panel: full height, full width from vertical center to viewport right (flex remainder).
    * Rounding only top-left + bottom-right (Tutor-style split card).
@@ -203,7 +200,7 @@
     box-sizing: border-box;
   }
 
-  .robbo-auth-standalone-shell .content > div {
+  .robbo-auth-standalone-shell .content>div {
     padding: 1.75rem 1.75rem 2rem;
     box-sizing: border-box;
   }
@@ -244,7 +241,7 @@
     box-sizing: border-box;
   }
 
-  .robbo-auth-standalone-shell .content > div {
+  .robbo-auth-standalone-shell .content>div {
     padding: 1.25rem 1.25rem 1.5rem;
     box-sizing: border-box;
   }
@@ -283,7 +280,7 @@
   }
 
   /* Small breakpoint hero (DefaultSmallLayout). */
-  .robbo-auth-standalone-shell #main .layout > span.bg-primary-400.w-100 {
+  .robbo-auth-standalone-shell #main .layout>span.bg-primary-400.w-100 {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -417,8 +414,8 @@
   max-width: $authn-form-stack-max-width;
 }
 
-.robbo-auth-standalone-shell .content .authn-logistration > #controlled-tab,
-.robbo-auth-standalone-shell .content .authn-logistration > #main-content.main-content {
+.robbo-auth-standalone-shell .content .authn-logistration>#controlled-tab,
+.robbo-auth-standalone-shell .content .authn-logistration>#main-content.main-content {
   box-sizing: border-box;
   width: 100%;
   max-width: $authn-form-stack-max-width;

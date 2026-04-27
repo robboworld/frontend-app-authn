@@ -7,6 +7,17 @@ import {
 } from '../data/constants';
 import { setCookie } from '../data/utils';
 
+const trimTrailingSlash = (url = '') => url.replace(/\/+$/, '');
+
+const getDefaultCatalogUrl = () => getConfig().SEARCH_CATALOG_URL || `${getConfig().LMS_BASE_URL}/courses`;
+
+const shouldRedirectToCatalog = (redirectUrl = '') => {
+  const normalizedRedirectUrl = trimTrailingSlash(redirectUrl);
+  const normalizedDashboardUrl = trimTrailingSlash(`${getConfig().LMS_BASE_URL}/dashboard`);
+
+  return !normalizedRedirectUrl || normalizedRedirectUrl === normalizedDashboardUrl;
+};
+
 const RedirectLogistration = (props) => {
   const {
     authenticatedUser,
@@ -31,7 +42,9 @@ const RedirectLogistration = (props) => {
     if (finishAuthUrl && !redirectUrl.includes(finishAuthUrl)) {
       finalRedirectUrl = getConfig().LMS_BASE_URL + finishAuthUrl;
     } else {
-      finalRedirectUrl = redirectUrl;
+      finalRedirectUrl = shouldRedirectToCatalog(redirectUrl)
+        ? getDefaultCatalogUrl()
+        : redirectUrl;
     }
 
     // Redirect to Progressive Profiling after successful registration
