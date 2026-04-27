@@ -1,5 +1,5 @@
 import React, {
-  useCallback, useEffect, useMemo, useState,
+  useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -121,6 +121,7 @@ const RegistrationPage = (props) => {
   const [errors, setErrors] = useState({ ...backedUpFormData.errors });
   const [errorCode, setErrorCode] = useState({ type: '', count: 0 });
   const [formStartTime, setFormStartTime] = useState(null);
+  const registrationInFlight = useRef(false);
   // temporary error state for embedded experience because we don't want to show errors on blur
   const [temporaryErrors, setTemporaryErrors] = useState({ ...backedUpFormData.errors });
 
@@ -195,6 +196,7 @@ const RegistrationPage = (props) => {
 
   useEffect(() => {
     if (registrationErrorCode) {
+      registrationInFlight.current = false;
       setErrorCode(prevState => ({ type: registrationErrorCode, count: prevState.count + 1 }));
     }
   }, [registrationErrorCode]);
@@ -287,6 +289,10 @@ const RegistrationPage = (props) => {
   };
 
   const registerUser = () => {
+    if (registrationInFlight.current || submitState === PENDING_STATE) {
+      return false;
+    }
+
     const totalRegistrationTime = (Date.now() - formStartTime) / 1000;
     let payload = { ...formFields };
 
@@ -312,7 +318,7 @@ const RegistrationPage = (props) => {
     // returning if not valid
     if (!isValid) {
       setErrorCode(prevState => ({ type: FORM_SUBMISSION_ERROR, count: prevState.count + 1 }));
-      return;
+      return false;
     }
 
     // Preparing payload for submission
@@ -324,7 +330,9 @@ const RegistrationPage = (props) => {
       queryParams);
 
     // making register call
+    registrationInFlight.current = true;
     dispatch(registerNewUser(payload));
+    return true;
   };
 
   const handleSubmit = (e) => {
@@ -459,6 +467,7 @@ const RegistrationPage = (props) => {
                   default: buttonLabel,
                   pending: '',
                 }}
+                disabled={submitState === PENDING_STATE}
                 onMouseDown={(e) => e.preventDefault()}
               />
               {!registrationEmbedded && (

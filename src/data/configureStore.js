@@ -9,6 +9,7 @@ import createRootReducer from './reducers';
 import rootSaga from './sagas';
 
 const sagaMiddleware = createSagaMiddleware();
+let configuredStore;
 
 function composeMiddleware() {
   if (getConfig().ENVIRONMENT === 'development') {
@@ -22,6 +23,10 @@ function composeMiddleware() {
 }
 
 export default function configureStore(initialState = {}) {
+  if (configuredStore) {
+    return configuredStore;
+  }
+
   const store = createStore(
     createRootReducer(),
     initialState,
@@ -29,5 +34,6 @@ export default function configureStore(initialState = {}) {
   );
   sagaMiddleware.run(rootSaga);
 
+  configuredStore = store;
   return store;
 }
