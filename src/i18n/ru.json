@@ -177,5 +177,6 @@
   "complete.your.profile.2": "профиль",
   "register.page.terms.of.service.and.honor.code": "Создавая аккаунт, вы соглашаетесь с {tosAndHonorCode} и подтверждаете, что {platformName} и участники обрабатывают ваши персональные данные в соответствии с {privacyPolicy}.",
   "register.page.honor.code": "Я согласен(на) с {platformName}&nbsp;{tosAndHonorCode}",
-  "register.page.terms.of.service": "Я согласен(на) с {platformName}&nbsp;{termsOfService}"
+  "register.page.terms.of.service": "Я согласен(на) с {platformName}&nbsp;{termsOfService}",
+  "robbo.header.mainNav.courseCatalog": "Каталог курсов"
 }
