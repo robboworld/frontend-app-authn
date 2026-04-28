@@ -10,7 +10,7 @@ const messages = defineMessages({
   'registration.fullname.label': {
     id: 'registration.fullname.label',
     defaultMessage: 'Full name',
-    description: 'Label / floating label for full name (Robbo)',
+    description: 'Label / floating label for full name (Robbo; RU: ФИО)',
   },
   'registration.email.label': {
     id: 'registration.email.label',
@@ -19,13 +19,13 @@ const messages = defineMessages({
   },
   'registration.username.label': {
     id: 'registration.username.label',
-    defaultMessage: 'Choose a username',
-    description: 'Label / floating label for username (Robbo)',
+    defaultMessage: 'Create a username',
+    description: 'Label / floating label for username (Robbo; RU: Придумайте логин)',
   },
   'registration.password.label': {
     id: 'registration.password.label',
     defaultMessage: 'Create a password',
-    description: 'Label / floating label for password (Robbo)',
+    description: 'Label / floating label for password (Robbo; RU: Придумайте пароль)',
   },
   'registration.country.label': {
     id: 'registration.country.label',
@@ -34,7 +34,7 @@ const messages = defineMessages({
   },
   'registration.opt.in.label': {
     id: 'registration.opt.in.label',
-    defaultMessage: 'I agree to receive news and marketing emails',
+    defaultMessage: 'I agree to receive news and promotional mailings',
     description: 'Text for opt in option on register page (guest landing: Я согласен(а) получать новости и рекламные рассылки).',
   },
   'registration.robbo.honor.consent': {
@@ -64,7 +64,7 @@ const messages = defineMessages({
   },
   'registration.robbo.marketing.required_error': {
     id: 'registration.robbo.marketing.required_error',
-    defaultMessage: 'You must agree to receive news and marketing emails',
+    defaultMessage: 'You must agree to receive news and promotional mailings',
     description: 'Validation when marketing opt-in is required and not checked (Robbo / guest landing parity)',
   },
   'registration.robbo.company.required_error': {
@@ -75,13 +75,13 @@ const messages = defineMessages({
   // Help text
   'help.text.name': {
     id: 'help.text.name',
-    defaultMessage: 'This name will be used by any certificates that you earn.',
-    description: 'Help text for fullname field on registration page',
+    defaultMessage: 'This full name will appear on any certificates you earn.',
+    description: 'Help text for fullname field (RU: ФИО / сертификаты)',
   },
   'help.text.username.1': {
     id: 'help.text.username.1',
-    defaultMessage: 'The name that will identify you in your courses.',
-    description: 'Part of help text for username field on registration page',
+    defaultMessage: 'The username that will identify you in your courses.',
+    description: 'Part of help text for username (RU: логин)',
   },
   'help.text.username.2': {
     id: 'help.text.username.2',
@@ -114,7 +114,7 @@ const messages = defineMessages({
   'empty.name.field.error': {
     id: 'empty.name.field.error',
     defaultMessage: 'Enter your full name',
-    description: 'Error message for empty fullname field',
+    description: 'Error message for empty fullname field (RU: Введите ФИО)',
   },
   'empty.email.field.error': {
     id: 'empty.email.field.error',
@@ -124,7 +124,7 @@ const messages = defineMessages({
   'empty.username.field.error': {
     id: 'empty.username.field.error',
     defaultMessage: 'Username must be between 2 and 30 characters',
-    description: 'Error message for empty username field',
+    description: 'Error message for empty username field (RU: логин 2–30 симв.)',
   },
   'empty.password.field.error': {
     id: 'empty.password.field.error',
@@ -158,8 +158,8 @@ const messages = defineMessages({
   },
   'name.validation.message': {
     id: 'name.validation.message',
-    defaultMessage: 'Enter a valid name',
-    description: 'Validation message that appears when fullname contain URL',
+    defaultMessage: 'Enter a valid full name',
+    description: 'Validation when fullname contain URL (RU: ФИО)',
   },
   'password.validation.message': {
     id: 'password.validation.message',

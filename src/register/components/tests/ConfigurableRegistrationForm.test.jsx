@@ -129,14 +129,14 @@ describe('ConfigurableRegistrationForm', () => {
 
   const populateRequiredFields = (getByLabelText, payload, isThirdPartyAuth = false) => {
     fireEvent.change(getByLabelText('Full name'), { target: { value: payload.name, name: 'name' } });
-    fireEvent.change(getByLabelText('Public username'), { target: { value: payload.username, name: 'username' } });
+    fireEvent.change(getByLabelText('Create a username'), { target: { value: payload.username, name: 'username' } });
     fireEvent.change(getByLabelText('Email'), { target: { value: payload.email, name: 'email' } });
 
     fireEvent.change(getByLabelText('Country/Region'), { target: { value: payload.country, name: 'country' } });
     fireEvent.blur(getByLabelText('Country/Region'), { target: { value: payload.country, name: 'country' } });
 
     if (!isThirdPartyAuth) {
-      fireEvent.change(getByLabelText('Password'), { target: { value: payload.password, name: 'password' } });
+      fireEvent.change(getByLabelText('Create a password'), { target: { value: payload.password, name: 'password' } });
     }
   };
 

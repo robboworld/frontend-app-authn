@@ -90,7 +90,7 @@ describe('NameField', () => {
       expect(props.handleErrorChange).toHaveBeenCalledTimes(1);
       expect(props.handleErrorChange).toHaveBeenCalledWith(
         'name',
-        'Enter a valid name',
+        'Enter a valid full name',
       );
     });
 

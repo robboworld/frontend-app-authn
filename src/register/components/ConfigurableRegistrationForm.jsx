@@ -164,13 +164,28 @@ const ConfigurableRegistrationForm = (props) => {
             </span>,
           );
           break;
-        case 'marketingEmailsOptIn':
-          // Robbo: то же поле вынесено ниже с полным label (registration.opt.in.label); иначе default
-          // рисует второй (пустой) чекбокс, т.к. в merge нет fieldData.label.
-          if (flags.showMarketingEmailOptInCheckbox) {
-            break;
-          }
-        // eslint-disable-next-line no-fallthrough
+        case 'marketingEmailsOptIn': {
+          const marketingRequired = Boolean(fieldDescriptions?.marketingEmailsOptIn);
+          formFieldDescriptions.push(
+            <span key={fieldData.name}>
+              <FormFieldRenderer
+                fieldData={{
+                  ...fieldData,
+                  type: fieldData.type || 'checkbox',
+                  label: formatMessage(messages['registration.opt.in.label']),
+                }}
+                value={formFields.marketingEmailsOptIn}
+                className="form-field--checkbox"
+                onChangeHandler={handleOnChange}
+                handleBlur={handleOnBlur}
+                handleFocus={handleOnFocus}
+                errorMessage={fieldErrors.marketingEmailsOptIn}
+                isRequired={marketingRequired}
+              />
+            </span>,
+          );
+          break;
+        }
         default:
           formFieldDescriptions.push(
             <span key={fieldData.name}>
@@ -205,8 +220,7 @@ const ConfigurableRegistrationForm = (props) => {
     );
   }
 
-  if (flags.showMarketingEmailOptInCheckbox) {
-    const marketingRequired = Boolean(fieldDescriptions?.marketingEmailsOptIn);
+  if (flags.showMarketingEmailOptInCheckbox && !fieldDescriptions?.marketingEmailsOptIn) {
     formFieldDescriptions.push(
       <span key="marketing_email_opt_in">
         <FormFieldRenderer
@@ -221,7 +235,7 @@ const ConfigurableRegistrationForm = (props) => {
           handleBlur={handleOnBlur}
           handleFocus={handleOnFocus}
           errorMessage={fieldErrors.marketingEmailsOptIn}
-          isRequired={marketingRequired}
+          isRequired={false}
         />
       </span>,
     );
