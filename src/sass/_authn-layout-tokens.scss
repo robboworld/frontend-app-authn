@@ -5,6 +5,9 @@ $authn-content-column-width: 520px;
 // Matches Paragon `$max-width-xs` / utility `.mw-xs` so tabs and `mw-xs` form stack share one width.
 $authn-form-stack-max-width: 464px;
 
+// Login row: submit + forgot link — below this form inline-size, row usually does not fit; center actions.
+$authn-login-actions-center-max: 18.5rem;
+
 // Below xl: hero + white card stack; cap hero line length for centered heading.
 $authn-stack-hero-max-width: 36rem;
 

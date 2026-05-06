@@ -37,27 +37,65 @@
 }
 
 /*
- * Hero: Paragon `display-2` sets h1 font-size — reset h1, size first line on `.auth-hero-title-line`,
- * second line on `.auth-hero-brand-line` (dedicated class, no long selector chains).
+ * Hero: `display-2` + RFS mostly follow VIEWPORT width — ignoring a narrow split column (~50%).
+ * Query container on `.w-50.d-flex`; size `.auth-*` lines with `cqi`; `!important` beats Bootstrap/RFS on `h1`.
  */
 @media (min-width: 1200px) {
-  .robbo-auth-standalone-shell .layout .w-50.d-flex .col-md-9 .display-2 {
-    font-size: 1rem;
-    line-height: 1.2;
+  .robbo-auth-standalone-shell #main .layout > .w-50.d-flex {
+    container-type: inline-size;
+    container-name: authn-split-hero;
   }
 
-  .robbo-auth-standalone-shell .layout .w-50.d-flex .col-md-9 .display-2 .auth-hero-title-line {
-    font-size: 48px;
-    font-weight: 400;
-    color: #166534 !important;
-    text-align: left;
+  .robbo-auth-standalone-shell #main .layout > .w-50.d-flex .col-md-9 h1.display-2 {
+    font-size: 1rem !important;
+    line-height: 1.2 !important;
+    max-width: 100%;
+    width: fit-content;
+    margin-inline: auto !important;
+    box-sizing: border-box;
+    text-align: center;
   }
 
-  .robbo-auth-standalone-shell .layout .auth-hero-brand-line {
-    font-size: 64px;
-    line-height: 1.1;
-    margin-top: 0.12em;
+  @supports (font-size: 1cqi) {
+    @container authn-split-hero (min-width: 0) {
+      .robbo-auth-standalone-shell #main .layout > .w-50.d-flex .col-md-9 h1.display-2 .auth-hero-title-line {
+        font-size: clamp(0.9rem, 5.75cqi + 0.45rem, 2.75rem) !important;
+        font-weight: 400 !important;
+        line-height: 1.16 !important;
+        color: #166534 !important;
+        text-align: center !important;
+        overflow-wrap: break-word;
+      }
+
+      .robbo-auth-standalone-shell #main .layout > .w-50.d-flex .col-md-9 h1.display-2 .auth-hero-brand-line {
+        font-size: clamp(1.05rem, 8cqi + 0.4rem, 3.5rem) !important;
+        line-height: 1.05 !important;
+        margin-top: 0.06em !important;
+        text-align: center !important;
+        overflow-wrap: break-word;
+      }
+    }
   }
+
+  @supports not (font-size: 1cqi) {
+    .robbo-auth-standalone-shell #main .layout > .w-50.d-flex .col-md-9 h1.display-2 .auth-hero-title-line {
+      font-size: clamp(0.9rem, 11vw + 0.35rem, 2.75rem) !important;
+      font-weight: 400 !important;
+      line-height: 1.16 !important;
+      color: #166534 !important;
+      text-align: center !important;
+      overflow-wrap: break-word;
+    }
+
+    .robbo-auth-standalone-shell #main .layout > .w-50.d-flex .col-md-9 h1.display-2 .auth-hero-brand-line {
+      font-size: clamp(1.05rem, 15vw + 0.35rem, 3.5rem) !important;
+      line-height: 1.05 !important;
+      margin-top: 0.06em !important;
+      text-align: center !important;
+      overflow-wrap: break-word;
+    }
+  }
+
 }
 
 .layout .w-50.d-flex .col-md-3.bg-white {
@@ -106,6 +144,14 @@
   --authn-content-margin-left: 0;
   /* Vertical margin on the white `.content` panel (BaseContainer); override from Tutor/theme if needed. */
   --authn-content-panel-block-margin: 40px;
+}
+
+/* `<main>` is a flex item under `.robbo-layout-page`; without an explicit width, centered columns can look shifted. */
+.robbo-layout-page.robbo-auth-standalone-shell > #main {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* Standalone auth (no Robbo header/footer): full viewport, card, decorative glow */
@@ -180,13 +226,25 @@
     box-sizing: border-box;
   }
 
+  /*
+   * `w-50` + rigid `min-width` on `.content` caused horizontal clip at ~1200–1320;
+   * let the hero shrink and allow form column floor to taper with vw.
+   */
+  .robbo-auth-standalone-shell #main .layout>.w-50.d-flex {
+    flex: 0 1 50%;
+    min-width: 0;
+    max-width: 50%;
+    box-sizing: border-box;
+  }
+
   .robbo-auth-standalone-shell .content {
     flex: 1 1 0;
-    min-width: $authn-content-column-width;
+    /* floor tracks viewport; cap keeps wide layouts legible */
+    min-width: clamp(18rem, 40vw, #{$authn-content-column-width});
     width: auto;
     max-width: none;
     margin-top: var(--authn-content-panel-block-margin);
-    margin-right: var(--authn-content-margin-right);
+    margin-right: clamp(0.875rem, 2.75vw, var(--authn-content-margin-right));
     margin-bottom: var(--authn-content-panel-block-margin);
     margin-left: var(--authn-content-margin-left);
     min-height: 0;
@@ -203,6 +261,21 @@
   .robbo-auth-standalone-shell .content>div {
     padding: 1.75rem 1.75rem 2rem;
     box-sizing: border-box;
+  }
+
+  /*
+   * DefaultLargeLayout: `.min-vh-100.d-flex` is row in markup; we flip to column in SCSS.
+   * Then main axis is vertical but `justify-content` stays `flex-start`, so the headline sits at the top.
+   * Lock column + centre on the left strip only (col-md-9 — not welcome layout’s col-md-10).
+   */
+  .robbo-auth-standalone-shell #main .layout > .w-50.d-flex .col-md-9.bg-primary-400 > .min-vh-100.d-flex {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    width: 100%;
+    box-sizing: border-box;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
   }
 }
 
@@ -229,7 +302,8 @@
 
   .robbo-auth-standalone-shell .content {
     flex: 0 0 auto;
-    align-self: stretch;
+    /* `stretch` can consume cross-axis space and negate `margin: auto`; center panel like hero strip */
+    align-self: center;
     width: min(100%, #{$authn-content-column-width});
     max-width: $authn-content-column-width;
     margin-top: 0;
@@ -247,24 +321,40 @@
   }
 
   /* Medium breakpoint hero: one column, heading above card (matches DefaultMediumLayout markup). */
-  .robbo-auth-standalone-shell #main .layout .w-100.p-0.mb-3.d-flex {
+  .robbo-auth-standalone-shell #main .layout > .w-100.p-0.mb-3.d-flex {
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
     width: 100%;
-    max-width: $authn-stack-hero-max-width;
+    max-width: $authn-content-column-width;
+    align-self: center;
     margin-inline: auto;
     margin-bottom: 0 !important;
+    box-sizing: border-box;
   }
 
-  .robbo-auth-standalone-shell #main .layout .col-md-10.bg-primary-400 {
-    flex: 0 0 auto;
-    width: 100%;
+  /* Bootstrap `.col-md-*` keeps ~83% width in row flex unless overridden */
+  .robbo-auth-standalone-shell #main .layout .w-100.p-0.mb-3.d-flex > .col-md-10.bg-primary-400 {
+    flex: 0 1 auto;
+    width: 100% !important;
     max-width: 100%;
+    min-width: 0;
+    align-self: stretch;
+    box-sizing: border-box;
   }
 
   .robbo-auth-standalone-shell #main .layout .col-md-10 .d-flex.align-items-center.justify-content-center {
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     width: 100%;
+    gap: 0;
+  }
+
+  .robbo-auth-standalone-shell #main .layout .col-md-10 .d-flex.align-items-center.justify-content-center>div:last-child {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
   }
 
   .robbo-auth-standalone-shell #main .layout .col-md-10 .display-1,
@@ -272,6 +362,23 @@
     text-align: center !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
+    font-weight: 400 !important;
+  }
+
+  /* Beat `h1` + `.display-1` from Bootstrap/Paragon; keep accent line bold. */
+  .robbo-auth-standalone-shell #main .layout .col-md-10.bg-primary-400 h1.display-1.main-heading.text-white {
+    font-weight: 400 !important;
+    margin-inline: auto !important;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .robbo-auth-standalone-shell #main .layout .col-md-10.bg-primary-400 h1.display-1.main-heading.text-white > span {
+    font-weight: 400 !important;
+  }
+
+  .robbo-auth-standalone-shell #main .layout .col-md-10.bg-primary-400 .text-accent-a {
+    font-weight: 700 !important;
   }
 
   .robbo-auth-standalone-shell #main .layout .col-md-10 .display-1 {
@@ -279,26 +386,92 @@
     margin-bottom: 0.5rem !important;
   }
 
-  /* Small breakpoint hero (DefaultSmallLayout). */
+  .robbo-auth-standalone-shell #main .layout .col-md-10 .main-heading .text-accent-a.d-inline-block {
+    display: inline !important;
+  }
+
+  /*
+   * Logo is hidden visually; the wrapping <a> still participates in flow on stacked layouts — drop it here only
+   * (xl split hero uses col-md-9 + different markup; do not globally hide anchors on .col-md-10).
+   */
+  .robbo-auth-standalone-shell #main .layout .col-md-10.bg-primary-400>a {
+    display: none;
+  }
+
+  /* Small breakpoint hero (DefaultSmallLayout): query container for headline `cqi` scaling when stacked */
   .robbo-auth-standalone-shell #main .layout>span.bg-primary-400.w-100 {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     width: 100%;
     max-width: $authn-stack-hero-max-width;
     margin-inline: auto;
     text-align: center;
+    box-sizing: border-box;
+    container-type: inline-size;
+    container-name: authn-stacked-hero;
+  }
+
+  /* Content column under hero span: full width for centered title */
+  .robbo-auth-standalone-shell #main .layout>span.bg-primary-400.w-100>div:not(.small-screen-top-stripe) {
+    width: 100%;
+    box-sizing: border-box;
+    padding-inline: 1rem;
+  }
+
+  /* Logo link is hidden in shell; remove empty <a> from layout so it cannot offset the title */
+  .robbo-auth-standalone-shell #main .layout>span.bg-primary-400.w-100>div:not(.small-screen-top-stripe)>a {
+    display: none;
   }
 
   .robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 .d-flex.align-items-center {
+    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
     width: 100%;
+    margin-inline: 0 !important;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  .robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 h1 {
+    margin-inline: auto !important;
+    padding-inline: 0 !important;
+    text-align: center !important;
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    .text-accent-a.d-inline-block {
+      display: inline !important;
+    }
   }
 
-  .robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 h1 {
-    text-align: center;
-    margin-left: 0.5rem !important;
-    margin-right: 0.5rem !important;
+  @supports (font-size: 1cqi) {
+    @container authn-stacked-hero (min-width: 0) {
+      .robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 h1.text-white {
+        font-size: clamp(1rem, 6.5cqi + 0.5rem, 1.9rem) !important;
+        line-height: 1.3 !important;
+      }
+    }
+  }
+
+  @supports not (font-size: 1cqi) {
+    .robbo-auth-standalone-shell #main .layout span.bg-primary-400.w-100 h1.text-white {
+      font-size: clamp(1.05rem, 3.75vw + 0.65rem, 1.875rem) !important;
+      line-height: 1.3 !important;
+    }
+  }
+
+  /* Stacked layouts (sm+ viewport, <xl): taller hero slab — vertically center headline (parity with xl `min-vh-100` column) */
+  @media (min-width: 576px) {
+    .robbo-auth-standalone-shell #main .layout > span.bg-primary-400.w-100 {
+      min-height: min(40vh, 14rem);
+      min-height: min(40dvh, 14rem);
+      justify-content: center;
+      box-sizing: border-box;
+    }
   }
 }
 
@@ -323,11 +496,20 @@
 .robbo-auth-standalone-shell #main .layout .col-md-10 .main-heading,
 .robbo-auth-standalone-shell #main .layout .col-md-10 .display-1 {
   color: #166534 !important;
+  font-weight: 400 !important;
+}
+
+.robbo-auth-standalone-shell #main .layout .col-md-10.bg-primary-400 h1.display-1.main-heading.text-white {
+  font-weight: 400 !important;
+}
+
+.robbo-auth-standalone-shell #main .layout .col-md-10.bg-primary-400 h1.display-1.main-heading.text-white > span {
+  font-weight: 400 !important;
 }
 
 .robbo-auth-standalone-shell #main .layout .col-md-10 .text-accent-a {
   color: #15803d !important;
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 
 .robbo-auth-standalone-shell #main .layout .w-100.p-0.mb-3 .col-md-2.bg-white {
@@ -393,6 +575,36 @@
   color: #14532d !important;
 }
 
+/* Login submit + forgot: row when wide; centered only when form column is too narrow for one row (~button+gap+link). */
+.robbo-auth-standalone-shell .content #sign-in-form {
+  container-type: inline-size;
+  container-name: signinform;
+
+  .authn-sign-in-actions {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 1rem;
+    row-gap: 0.375rem;
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
+
+@container signinform (max-width: #{$authn-login-actions-center-max}) {
+  .robbo-auth-standalone-shell .content #sign-in-form .authn-sign-in-actions {
+    justify-content: center;
+  }
+}
+
+/* Split layout (xl): disable form size-containment (avoids subtle layout side effects next to flex hero). */
+@media (min-width: 1200px) {
+  .robbo-auth-standalone-shell .content #sign-in-form {
+    container-type: normal;
+  }
+}
+
 /*
  * Logistration: `Tabs` sit outside `#main-content` but share the same visual column as `.mw-xs` forms.
  * Center the stack and cap width to Paragon `mw-xs` (464px) so `nav.pgn__tabs` matches form fields.
@@ -415,7 +627,9 @@
 }
 
 .robbo-auth-standalone-shell .content .authn-logistration>#controlled-tab,
-.robbo-auth-standalone-shell .content .authn-logistration>#main-content.main-content {
+.robbo-auth-standalone-shell .content .authn-logistration>#main-content.main-content,
+.robbo-auth-standalone-shell .content .authn-logistration__inner #controlled-tab,
+.robbo-auth-standalone-shell .content .authn-logistration__inner #main-content.main-content {
   box-sizing: border-box;
   width: 100%;
   max-width: $authn-form-stack-max-width;
@@ -426,9 +640,27 @@
 }
 
 .robbo-auth-standalone-shell .content .authn-logistration nav.nav-tabs.pgn__tabs,
-.robbo-auth-standalone-shell .content .authn-logistration #controlled-tab .nav-tabs {
+.robbo-auth-standalone-shell .content .authn-logistration #controlled-tab .nav-tabs.pgn__tabs {
   width: 100%;
   box-sizing: border-box;
+  /*
+   * Paragon `Tabs` always reserves a "More..." overflow control; on the narrow logistration
+   * column (~$authn-form-stack-max-width) the width budget hides the second tab. We only show
+   * ≤2 tabs here — drop the overflow UI and show tab links (wrap on very small widths).
+   */
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+}
+
+.robbo-auth-standalone-shell .content .authn-logistration .pgn__tabs .pgn__tab_more.nav-item {
+  display: none !important;
+}
+
+.robbo-auth-standalone-shell .content .authn-logistration .pgn__tabs .pgn__tab_invisible.nav-item {
+  position: static;
+  left: auto;
+  pointer-events: auto;
+  visibility: visible;
 }
 
 /*

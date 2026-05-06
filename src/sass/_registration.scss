@@ -35,8 +35,9 @@ $robbo-form-checkbox-indeterminate-svg: url("data:image/svg+xml,%3Csvg xmlns='ht
   min-width: 14.4rem;
 }
 
-// FormFieldRenderer (company и др.): та же ширина, что у полей через FormGroup (Email, username…)
-#registration-form .pgn__form-group .pgn__form-control-decorator-group.form-group__form-field {
+// FormFieldRenderer (company и др.) + login: ширина как у FormGroup / Paragon decorator (small / password icon)
+#registration-form .pgn__form-group .pgn__form-control-decorator-group.form-group__form-field,
+#sign-in-form .pgn__form-group .pgn__form-control-decorator-group.form-group__form-field {
   width: 100%;
   max-width: 100%;
   min-width: 0;

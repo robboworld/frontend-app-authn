@@ -407,6 +407,13 @@ select.form-control {
   }
 
   .tpa-skeleton {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (min-width: 520px) {
+  .tpa-skeleton {
     min-width: $authn-content-column-width !important;
   }
 }
@@ -433,9 +440,16 @@ select.form-control {
     margin-right: 0 !important;
   }
 
-  .welcome-page-content,
-  .main-content {
+  .welcome-page-content {
     min-width: 100vw !important;
+    padding: 1.5rem !important;
+  }
+
+  /* `#main-content.main-content`: `100vw` overflows narrow standalone auth card (shell max-width < viewport). */
+  .main-content {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
     padding: 1.5rem !important;
   }
 

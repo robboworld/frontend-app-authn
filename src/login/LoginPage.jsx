@@ -266,29 +266,31 @@ const LoginPage = (props) => {
             errorMessage={errors.password}
             floatingLabel={formatMessage(messages['login.password.label'])}
           />
-          <StatefulButton
-            name="sign-in"
-            id="sign-in"
-            type="submit"
-            variant="brand"
-            className="login-button-width"
-            state={submitState}
-            labels={{
-              default: formatMessage(messages['sign.in.button']),
-              pending: '',
-            }}
-            onClick={handleSubmit}
-            onMouseDown={(event) => event.preventDefault()}
-          />
-          <Link
-            id="forgot-password"
-            name="forgot-password"
-            className="btn btn-link font-weight-500 text-body"
-            to={updatePathWithQueryParams(RESET_PAGE)}
-            onClick={trackForgotPasswordLinkClick}
-          >
-            {formatMessage(messages['forgot.password'])}
-          </Link>
+          <div className="authn-sign-in-actions">
+            <StatefulButton
+              name="sign-in"
+              id="sign-in"
+              type="submit"
+              variant="brand"
+              className="login-button-width"
+              state={submitState}
+              labels={{
+                default: formatMessage(messages['sign.in.button']),
+                pending: '',
+              }}
+              onClick={handleSubmit}
+              onMouseDown={(event) => event.preventDefault()}
+            />
+            <Link
+              id="forgot-password"
+              name="forgot-password"
+              className="btn btn-link font-weight-500 text-body"
+              to={updatePathWithQueryParams(RESET_PAGE)}
+              onClick={trackForgotPasswordLinkClick}
+            >
+              {formatMessage(messages['forgot.password'])}
+            </Link>
+          </div>
           <ThirdPartyAuth
             currentProvider={currentProvider}
             providers={providers}
