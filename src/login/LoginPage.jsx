@@ -230,6 +230,7 @@ const LoginPage = (props) => {
         success={loginResult.success}
         redirectUrl={loginResult.redirectUrl}
         finishAuthUrl={finishAuthUrl}
+        yandexGoalName="login"
       />
       <div className="mw-xs mt-3 mb-2">
         <LoginFailureMessage

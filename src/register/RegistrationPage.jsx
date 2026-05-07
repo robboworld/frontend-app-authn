@@ -370,6 +370,7 @@ const RegistrationPage = (props) => {
           optionalFields={optionalFields}
           registrationEmbedded={registrationEmbedded}
           redirectToProgressiveProfilingPage={false}
+          yandexGoalName="register"
         />
         {autoSubmitRegForm && !errorCode.type ? (
           <div className="mw-xs mt-5 text-center">

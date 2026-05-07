@@ -1,3 +1,8 @@
+/**
+ * Modifications Copyright (C) 2026 Robbo <https://robbo.ru>. See NOTICE at repository root.
+ */
+import React, { useEffect, useRef } from 'react';
+
 import { getConfig } from '@edx/frontend-platform';
 import PropTypes from 'prop-types';
 import { Navigate } from 'react-router-dom';
@@ -5,6 +10,7 @@ import { Navigate } from 'react-router-dom';
 import {
   AUTHN_PROGRESSIVE_PROFILING, RECOMMENDATIONS, REDIRECT,
 } from '../data/constants';
+import { reachYandexGoal } from '../robbo-analytics/yandexMetrika';
 import { setCookie } from '../data/utils';
 
 const trimTrailingSlash = (url = '') => url.replace(/\/+$/, '');
@@ -60,8 +66,22 @@ const RedirectLogistration = (props) => {
     userId,
     registrationEmbedded,
     host,
+    yandexGoalName,
   } = props;
   let finalRedirectUrl = '';
+
+  const yandexGoalFiredRef = useRef(false);
+  useEffect(() => {
+    if (!success) {
+      yandexGoalFiredRef.current = false;
+      return;
+    }
+    if (!yandexGoalName || yandexGoalFiredRef.current) {
+      return;
+    }
+    yandexGoalFiredRef.current = true;
+    reachYandexGoal(yandexGoalName);
+  }, [success, yandexGoalName]);
 
   if (success) {
     // If we're in a third party auth pipeline, we must complete the pipeline
@@ -144,6 +164,7 @@ RedirectLogistration.defaultProps = {
   userId: null,
   registrationEmbedded: false,
   host: '',
+  yandexGoalName: '',
 };
 
 RedirectLogistration.propTypes = {
@@ -158,6 +179,7 @@ RedirectLogistration.propTypes = {
   userId: PropTypes.number,
   registrationEmbedded: PropTypes.bool,
   host: PropTypes.string,
+  yandexGoalName: PropTypes.string,
 };
 
 export default RedirectLogistration;
