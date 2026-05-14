@@ -8,13 +8,16 @@
 #root {
   display: flex;
   flex-direction: column;
+  /* `100vh` alone is taller than the visible viewport on many mobile browsers; prefer dynamic viewport. */
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .robbo-layout-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .robbo-layout-page > main,

@@ -300,6 +300,20 @@
     padding-bottom: max(var(--authn-content-margin-bottom), 1.5rem);
   }
 
+  /*
+   * Desktop `::before` uses negative `bottom`/`left` for a soft glow. With `overflow-x: hidden`,
+   * `overflow-y` resolves to `auto`, so any pseudo box extending past the padding edge becomes
+   * scrollable “empty” area (background-only scroll on phones). Keep the glow inside the layout
+   * box on narrow viewports.
+   */
+  .robbo-auth-standalone-shell #main .layout::before {
+    left: 50%;
+    bottom: 0;
+    width: min(88vw, 420px);
+    height: min(88vw, 420px);
+    transform: translateX(-50%);
+  }
+
   .robbo-auth-standalone-shell .content {
     flex: 0 0 auto;
     /* `stretch` can consume cross-axis space and negate `margin: auto`; center panel like hero strip */
