@@ -1,0 +1,23 @@
+// Copyright (C) 2024-2026 Robbo <https://robbo.ru>
+// SPDX-License-Identifier: AGPL-3.0-only
+// Part of the Robbo Open edX MFE overrides. See NOTICE at repository root.
+// Modifications Copyright (C) 2026 Robbo. See NOTICE at repository root.
+
+// Authn MFE: no Robbo global header/footer — only page shell for `#main` flex layout (see MainApp.jsx).
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.robbo-layout-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.robbo-layout-page > main,
+#root > main {
+  flex: 1 0 auto;
+}

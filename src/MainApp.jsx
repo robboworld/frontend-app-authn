@@ -37,7 +37,6 @@ import { ProgressiveProfiling } from './progressive-profiling';
 import { RecommendationsPage } from './recommendations';
 import { RegistrationPage } from './register';
 import { ResetPasswordPage } from './reset-password';
-import { RobboFooter, RobboHeader } from './robbo-layout';
 
 import './index.scss';
 
@@ -53,7 +52,6 @@ const MainAppRoutes = () => {
         'robbo-auth-standalone-shell': authStandaloneShell,
       })}
     >
-      {!authStandaloneShell && <RobboHeader showUserDropdown={false} />}
       <main id="main">
         <Routes>
           <Route path="/" element={<Navigate replace to={updatePathWithQueryParams(REGISTER_PAGE)} />} />
@@ -76,7 +74,6 @@ const MainAppRoutes = () => {
           <Route path="*" element={<Navigate replace to={PAGE_NOT_FOUND} />} />
         </Routes>
       </main>
-      {!authStandaloneShell && <RobboFooter />}
     </div>
   );
 };

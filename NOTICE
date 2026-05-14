@@ -5,7 +5,7 @@ This repository is a Robbo fork/override of Open edX frontend-app-authn. Base
 code is Copyright Open edX contributors and others; see git history and
 upstream https://github.com/openedx/frontend-app-authn .
 
-Modifications and Robbo-specific files (including src/robbo-layout/ and files
+Modifications and Robbo-specific files (including `src/robbo-layout/authn-layout-shell.scss` and files
 marked in copyright headers) are:
 
   Copyright (C) 2024-2026 Robbo <https://robbo.ru>
