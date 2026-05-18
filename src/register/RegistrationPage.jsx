@@ -29,7 +29,11 @@ import {
 import getBackendValidations from './data/selectors';
 import { mergeRobboRegistrationFieldDescriptions } from './data/robboRegistrationFields';
 import {
-  isFormValid, prepareRegistrationPayload,
+  isFormValid,
+  normalizeCompanyServerErrorMessage,
+  normalizeNameServerErrorMessage,
+  prepareRegistrationPayload,
+  validateCompanyField,
 } from './data/utils';
 import messages from './messages';
 import { EmailField, NameField, UsernameField } from './RegistrationFields';
@@ -186,13 +190,28 @@ const RegistrationPage = (props) => {
 
   useEffect(() => {
     if (backendValidations) {
+      const companyInvalidLabel = formatMessage(messages['registration.robbo.company.invalid_error']);
+      const nameThreeWordsLabel = formatMessage(messages['registration.robbo.name.three_words_error']);
+      const localizedValidations = { ...backendValidations };
+      if (localizedValidations.name) {
+        localizedValidations.name = normalizeNameServerErrorMessage(
+          localizedValidations.name,
+          nameThreeWordsLabel,
+        );
+      }
+      if (localizedValidations.company) {
+        localizedValidations.company = normalizeCompanyServerErrorMessage(
+          localizedValidations.company,
+          companyInvalidLabel,
+        );
+      }
       if (registrationEmbedded) {
-        setTemporaryErrors(prevErrors => ({ ...prevErrors, ...backendValidations }));
+        setTemporaryErrors((prevErrors) => ({ ...prevErrors, ...localizedValidations }));
       } else {
-        setErrors(prevErrors => ({ ...prevErrors, ...backendValidations }));
+        setErrors((prevErrors) => ({ ...prevErrors, ...localizedValidations }));
       }
     }
-  }, [backendValidations, registrationEmbedded]);
+  }, [backendValidations, registrationEmbedded, formatMessage]);
 
   useEffect(() => {
     if (registrationErrorCode) {
@@ -233,7 +252,8 @@ const RegistrationPage = (props) => {
   const handleCompanyFieldChange = (event) => {
     dismissRegistrationFailureBanner();
     const { name, value } = event.target;
-    setConfigurableFormFields((prev) => ({ ...prev, [name]: value }));
+    const sanitized = value.replace(/[a-zA-Z]/g, '');
+    setConfigurableFormFields((prev) => ({ ...prev, [name]: sanitized }));
     if (registrationError[name]) {
       dispatch(clearRegistrationBackendError(name));
     }
@@ -246,10 +266,15 @@ const RegistrationPage = (props) => {
 
   const handleCompanyFieldBlur = (event) => {
     const { name, value } = event.target;
-    let error = '';
-    if ((!value || !value.trim()) && registrationFieldDescriptions[name]?.error_message) {
-      error = registrationFieldDescriptions[name].error_message;
-    }
+    const fieldMeta = registrationFieldDescriptions[name];
+    const error = fieldMeta?.error_message
+      ? validateCompanyField(
+        value,
+        fieldMeta.error_message,
+        fieldMeta.invalid_error_message
+          || formatMessage(messages['registration.robbo.company.invalid_error']),
+      )
+      : '';
     if (registrationEmbedded) {
       setTemporaryErrors((prev) => ({ ...prev, [name]: error }));
     } else {

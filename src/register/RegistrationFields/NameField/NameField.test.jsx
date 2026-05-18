@@ -117,9 +117,9 @@ describe('NameField', () => {
 
       const nameInput = container.querySelector('input#name');
       // Enter a valid name so that frontend validations are passed
-      fireEvent.blur(nameInput, { target: { value: 'test', name: 'name' } });
+      fireEvent.blur(nameInput, { target: { value: 'Bob John Smith', name: 'name' } });
 
-      expect(store.dispatch).toHaveBeenCalledWith(fetchRealtimeValidations({ name: 'test' }));
+      expect(store.dispatch).toHaveBeenCalledWith(fetchRealtimeValidations({ name: 'Bob John Smith' }));
     });
 
     it('should clear the registration validation error on focus on field', () => {

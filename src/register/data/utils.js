@@ -21,6 +21,56 @@ export const validatePasswordField = (value, formatMessage) => {
 };
 
 /**
+ * Company name: required; Latin letters (a–z) are not accepted.
+ */
+/** English LMS validation text when gettext .mo is missing or locale is en. */
+export const COMPANY_INVALID_SERVER_MESSAGES = new Set([
+  'Incorrect company entry.',
+  'Incorrect company entry',
+]);
+
+export const NAME_THREE_WORDS_SERVER_MESSAGES = new Set([
+  'Full name must contain three words separated by spaces.',
+  'Full name must contain three words separated by spaces',
+]);
+
+/**
+ * Map LMS company field error to MFE locale (API may return English).
+ */
+export const normalizeNameServerErrorMessage = (message, threeWordsErrorMessage) => {
+  if (!message) {
+    return message;
+  }
+  const trimmed = String(message).trim();
+  if (NAME_THREE_WORDS_SERVER_MESSAGES.has(trimmed)) {
+    return threeWordsErrorMessage;
+  }
+  return message;
+};
+
+export const normalizeCompanyServerErrorMessage = (message, invalidErrorMessage) => {
+  if (!message) {
+    return message;
+  }
+  const trimmed = String(message).trim();
+  if (COMPANY_INVALID_SERVER_MESSAGES.has(trimmed)) {
+    return invalidErrorMessage;
+  }
+  return message;
+};
+
+export const validateCompanyField = (value, requiredErrorMessage, invalidErrorMessage) => {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) {
+    return requiredErrorMessage;
+  }
+  if (LETTER_REGEX.test(trimmed)) {
+    return invalidErrorMessage;
+  }
+  return '';
+};
+
+/**
  * It accepts complete registration data as payload and checks if the form is valid.
  * @param payload
  * @param errors
@@ -100,6 +150,21 @@ export const isFormValid = (
     }
     if (fieldErrors[key]) { isValid = false; }
   });
+
+  if (fieldDescriptions.company) {
+    const companyValue = configurableFormFields.company ?? payload.company ?? '';
+    const invalidCompanyMessage = fieldDescriptions.company.invalid_error_message
+      || formatMessage(messages['registration.robbo.company.invalid_error']);
+    const companyError = validateCompanyField(
+      companyValue,
+      fieldDescriptions.company.error_message,
+      invalidCompanyMessage,
+    );
+    if (companyError) {
+      fieldErrors.company = companyError;
+      isValid = false;
+    }
+  }
 
   return { isValid, fieldErrors, emailSuggestion };
 };

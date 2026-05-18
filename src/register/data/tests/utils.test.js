@@ -76,7 +76,7 @@ describe('Payload validation', () => {
   });
 
   test('requires marketing opt-in when described in fieldDescriptions', () => {
-    const payload = { name: 'Valid User', email: 'a@b.co', username: 'user1', password: 'a1b2c3d4' };
+    const payload = { name: 'Valid Good User', email: 'a@b.co', username: 'user1', password: 'a1b2c3d4' };
     const errors = {};
     const fieldDescriptions = {
       marketingEmailsOptIn: {
@@ -97,7 +97,7 @@ describe('Payload validation', () => {
   });
 
   test('passes when marketing opt-in is checked and described as required', () => {
-    const payload = { name: 'Valid User', email: 'a@b.co', username: 'user1', password: 'a1b2c3d4' };
+    const payload = { name: 'Valid Good User', email: 'a@b.co', username: 'user1', password: 'a1b2c3d4' };
     const errors = {};
     const fieldDescriptions = {
       marketingEmailsOptIn: {

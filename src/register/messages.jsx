@@ -72,6 +72,11 @@ const messages = defineMessages({
     defaultMessage: 'Please enter a company name',
     description: 'Validation for company when required (Robbo fallback)',
   },
+  'registration.robbo.company.invalid_error': {
+    id: 'registration.robbo.company.invalid_error',
+    defaultMessage: 'Incorrect company entry',
+    description: 'Validation when company contains Latin letters (Robbo)',
+  },
   // Help text
   'help.text.name': {
     id: 'help.text.name',
@@ -160,6 +165,11 @@ const messages = defineMessages({
     id: 'name.validation.message',
     defaultMessage: 'Enter a valid full name',
     description: 'Validation when fullname contain URL (RU: ФИО)',
+  },
+  'registration.robbo.name.three_words_error': {
+    id: 'registration.robbo.name.three_words_error',
+    defaultMessage: 'Full name must contain three words separated by spaces',
+    description: 'Validation when full name is not exactly three words (Robbo)',
   },
   'password.validation.message': {
     id: 'password.validation.message',

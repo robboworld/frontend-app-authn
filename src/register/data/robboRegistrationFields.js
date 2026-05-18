@@ -40,6 +40,12 @@ export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage
       type: 'text',
       label: formatMessage(messages['registration.robbo.company.label']),
       error_message: formatMessage(messages['registration.robbo.company.required_error']),
+      invalid_error_message: formatMessage(messages['registration.robbo.company.invalid_error']),
+    };
+  } else if (!d.company.invalid_error_message) {
+    d.company = {
+      ...d.company,
+      invalid_error_message: formatMessage(messages['registration.robbo.company.invalid_error']),
     };
   }
 

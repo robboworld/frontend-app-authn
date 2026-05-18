@@ -9,10 +9,20 @@ export const HTML_REGEX = /<|>/u;
 // regex from backend
 export const INVALID_NAME_REGEX = /https?:\/\/(?:[-\w.]|(?:%[\da-fA-F]{2}))*/g;
 
+export const nameHasThreeWords = (value) => {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) {
+    return false;
+  }
+  return trimmed.split(/\s+/).length === 3;
+};
+
 const validateName = (value, formatMessage) => {
   let fieldError = '';
   if (!value.trim()) {
     fieldError = formatMessage(messages['empty.name.field.error']);
+  } else if (!nameHasThreeWords(value)) {
+    fieldError = formatMessage(messages['registration.robbo.name.three_words_error']);
   } else if (URL_REGEX.test(value) || HTML_REGEX.test(value) || INVALID_NAME_REGEX.test(value)) {
     fieldError = formatMessage(messages['name.validation.message']);
   }
