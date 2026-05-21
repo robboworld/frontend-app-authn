@@ -11,7 +11,10 @@
 }
 
 .layout {
-  background: linear-gradient(180deg, #f0fdf4 0%, #f7fef9 55%, #ffffff 100%);
+  background:
+    radial-gradient(ellipse 120% 80% at 100% 0%, rgba($authn-bg-mint-strong, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 70% at 0% 100%, rgba($robbo-brand-primary, 0.12) 0%, transparent 50%),
+    linear-gradient(168deg, $authn-bg-surface 0%, #f7fef9 48%, $authn-bg-white 100%);
 }
 
 .layout .w-50.d-flex {
@@ -144,6 +147,14 @@
   --authn-content-margin-left: 0;
   /* Vertical margin on the white `.content` panel (BaseContainer); override from Tutor/theme if needed. */
   --authn-content-panel-block-margin: 40px;
+
+  /*
+   * Page wash behind the form card — layered linear + radial stops.
+   * Override from Tutor/extra CSS, e.g. `--authn-bg-angle: 140deg`.
+   */
+  --authn-bg-fallback: #{$authn-bg-surface};
+  --authn-bg-angle: 152deg;
+  --authn-bg-glow-blur: 32px;
 }
 
 /* `<main>` is a flex item under `.robbo-layout-page`; without an explicit width, centered columns can look shifted. */
@@ -157,14 +168,19 @@
 /* Standalone auth (no Robbo header/footer): full viewport, card, decorative glow */
 .robbo-auth-standalone-shell #main .layout {
   position: relative;
-  /* Stronger green wash than base `.layout` so the split reads clearly next to the white form column. */
-  background: linear-gradient(180deg,
-      #bbf7d0 0%,
-      #d1fae5 22%,
-      #ecfdf5 48%,
-      #f0fdf4 72%,
-      #fafefa 92%,
-      #ffffff 100%);
+  /* Stronger wash than base `.layout`: diagonal mesh + corner blooms (brand mint / emerald). */
+  background-color: var(--authn-bg-fallback);
+  background-image:
+    radial-gradient(ellipse 95% 72% at 92% 8%, rgba($authn-bg-mint-strong, 0.55) 0%, rgba($authn-bg-mint, 0.28) 38%, transparent 68%),
+    radial-gradient(ellipse 80% 65% at 6% 92%, rgba($robbo-brand-primary, 0.2) 0%, rgba($authn-bg-mint, 0.14) 42%, transparent 70%),
+    radial-gradient(ellipse 55% 45% at 50% 38%, rgba($authn-bg-mint-soft, 0.35) 0%, transparent 72%),
+    linear-gradient(var(--authn-bg-angle),
+      $authn-bg-mint 0%,
+      $authn-bg-mint-soft 18%,
+      #ecfdf5 42%,
+      $authn-bg-surface 68%,
+      #fafefa 90%,
+      $authn-bg-white 100%);
   box-sizing: border-box;
   min-height: 100vh;
   min-height: 100dvh;
@@ -185,22 +201,41 @@
   min-height: 0 !important;
 }
 
-.robbo-auth-standalone-shell #main .layout::before {
+.robbo-auth-standalone-shell #main .layout::before,
+.robbo-auth-standalone-shell #main .layout::after {
   content: "";
   position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Lower-left emerald bloom (desktop bleeds slightly past edge). */
+.robbo-auth-standalone-shell #main .layout::before {
   left: -18%;
   bottom: -28%;
   width: min(82vw, 600px);
   height: min(82vw, 600px);
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%,
-      rgba(22, 163, 74, 0.42) 0%,
-      rgba(74, 222, 128, 0.52) 32%,
-      rgba(187, 247, 208, 0.5) 52%,
-      rgba(255, 255, 255, 0) 74%);
-  filter: blur(30px);
-  pointer-events: none;
-  z-index: 0;
+  background: radial-gradient(circle at 42% 42%,
+      rgba($robbo-brand-primary, 0.38) 0%,
+      rgba(74, 222, 128, 0.48) 28%,
+      rgba($authn-bg-mint, 0.42) 48%,
+      rgba($authn-bg-white, 0) 72%);
+  filter: blur(var(--authn-bg-glow-blur));
+}
+
+/* Upper-right mint highlight — balances the split layout on wide screens. */
+.robbo-auth-standalone-shell #main .layout::after {
+  right: -10%;
+  top: -14%;
+  width: min(68vw, 520px);
+  height: min(68vw, 520px);
+  background: radial-gradient(circle at 48% 52%,
+      rgba(52, 211, 153, 0.42) 0%,
+      rgba($authn-bg-mint-strong, 0.3) 34%,
+      rgba($authn-bg-surface, 0.08) 58%,
+      rgba($authn-bg-white, 0) 74%);
+  filter: blur(calc(var(--authn-bg-glow-blur) - 4px));
 }
 
 .robbo-auth-standalone-shell #main .layout .w-50.d-flex,
@@ -301,17 +336,25 @@
   }
 
   /*
-   * Desktop `::before` uses negative `bottom`/`left` for a soft glow. With `overflow-x: hidden`,
-   * `overflow-y` resolves to `auto`, so any pseudo box extending past the padding edge becomes
-   * scrollable “empty” area (background-only scroll on phones). Keep the glow inside the layout
-   * box on narrow viewports.
+   * Desktop pseudos use negative offsets for a soft bleed. With `overflow-x: hidden`,
+   * `overflow-y` resolves to `auto`, so boxes past the padding edge become scrollable “empty”
+   * area on phones — keep both blooms inside the layout box on narrow viewports.
    */
   .robbo-auth-standalone-shell #main .layout::before {
     left: 50%;
-    bottom: 0;
-    width: min(88vw, 420px);
-    height: min(88vw, 420px);
-    transform: translateX(-50%);
+    bottom: 6%;
+    width: min(92vw, 440px);
+    height: min(72vw, 360px);
+    transform: translateX(-52%);
+  }
+
+  .robbo-auth-standalone-shell #main .layout::after {
+    right: auto;
+    left: 50%;
+    top: 0;
+    width: min(100vw, 400px);
+    height: min(58vw, 280px);
+    transform: translateX(-48%);
   }
 
   .robbo-auth-standalone-shell .content {

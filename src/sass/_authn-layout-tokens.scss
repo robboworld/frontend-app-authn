@@ -13,3 +13,10 @@ $authn-stack-hero-max-width: 36rem;
 
 // LMS `robbo-theme` primary; Paragon checkboxes default to `$component-active-bg` (typically blue).
 $robbo-brand-primary: #15803d;
+
+// Auth page background wash (standalone shell); align with robbo-theme `$primary-light` / mint scale.
+$authn-bg-mint-strong: #86efac;
+$authn-bg-mint: #bbf7d0;
+$authn-bg-mint-soft: #d1fae5;
+$authn-bg-surface: #f0fdf4;
+$authn-bg-white: #ffffff;
