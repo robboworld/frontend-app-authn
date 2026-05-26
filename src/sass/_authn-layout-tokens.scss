@@ -1,3 +1,8 @@
+// Copyright (C) 2026 Robbo <https://robbo.ru>
+// SPDX-License-Identifier: AGPL-3.0-only
+// Part of the Robbo Open edX MFE overrides. See NOTICE at repository root.
+// Tokens: docs/design/robbo-brand-guidelines.md
+
 // Minimum width for the form column (.main-content); the white `.content` panel can grow wider
 // (fills the right flex track next to the w-50 hero — no fixed max tied to this value).
 $authn-content-column-width: 520px;
@@ -11,12 +16,17 @@ $authn-login-actions-center-max: 18.5rem;
 // Below xl: hero + white card stack; cap hero line length for centered heading.
 $authn-stack-hero-max-width: 36rem;
 
-// LMS `robbo-theme` primary; Paragon checkboxes default to `$component-active-bg` (typically blue).
-$robbo-brand-primary: #15803d;
+// Official ROBBO brand green (PMS 354 / #00af41)
+$robbo-brand-primary: #00af41;
+$robbo-brand-primary-dark: mix(#000000, $robbo-brand-primary, 28%);
+$robbo-brand-coal: #383838;
+$robbo-brand-grey: #989898;
 
-// Auth page background wash (standalone shell); align with robbo-theme `$primary-light` / mint scale.
-$authn-bg-mint-strong: #86efac;
-$authn-bg-mint: #bbf7d0;
-$authn-bg-mint-soft: #d1fae5;
-$authn-bg-surface: #f0fdf4;
+$robbo-font-stack: 'ProximaNova', 'Proxima Nova', Helvetica, Arial, sans-serif;
+
+// Auth page background wash — tints derived from brand green
+$authn-bg-mint-strong: mix(#ffffff, $robbo-brand-primary, 52%);
+$authn-bg-mint: mix(#ffffff, $robbo-brand-primary, 72%);
+$authn-bg-mint-soft: mix(#ffffff, $robbo-brand-primary, 86%);
+$authn-bg-surface: mix(#ffffff, $robbo-brand-primary, 93%);
 $authn-bg-white: #ffffff;
