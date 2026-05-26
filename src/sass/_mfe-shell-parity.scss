@@ -1,4 +1,5 @@
 @import "_authn-layout-tokens.scss";
+@import "robbo-paragon-focus";
 
 /*
  * Visual parity layer for authn override:
@@ -11,6 +12,8 @@
   color: $robbo-brand-coal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  @include robbo-paragon-focus-rings;
 }
 
 .robbo-layout-page.robbo-auth-standalone-shell h1,
@@ -834,4 +837,8 @@
 .btn-primary:hover {
   background-color: #14532d !important;
   border-color: #14532d !important;
+}
+
+#paragon-portal-root {
+  @include robbo-paragon-focus-rings;
 }
