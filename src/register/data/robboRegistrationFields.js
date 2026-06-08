@@ -49,5 +49,19 @@ export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage
     };
   }
 
+  if (!d.phone_number) {
+    d.phone_number = {
+      name: 'phone_number',
+      type: 'tel',
+      label: formatMessage(messages['registration.robbo.phone.label']),
+      invalid_error_message: formatMessage(messages['registration.robbo.phone.invalid_error']),
+    };
+  } else if (!d.phone_number.invalid_error_message) {
+    d.phone_number = {
+      ...d.phone_number,
+      invalid_error_message: formatMessage(messages['registration.robbo.phone.invalid_error']),
+    };
+  }
+
   return d;
 }

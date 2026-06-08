@@ -32,8 +32,12 @@ import {
   isFormValid,
   normalizeCompanyServerErrorMessage,
   normalizeNameServerErrorMessage,
+  normalizePhoneServerErrorMessage,
   prepareRegistrationPayload,
+  normalizeRobboPhoneNumber,
+  sanitizePhoneInput,
   validateCompanyField,
+  validatePhoneField,
 } from './data/utils';
 import messages from './messages';
 import { EmailField, NameField, UsernameField } from './RegistrationFields';
@@ -102,11 +106,13 @@ const RegistrationPage = (props) => {
   const queryParams = useMemo(() => getAllPossibleQueryParams(), []);
   const tpaHint = useMemo(() => getTpaHint(), []);
 
-  const fieldDescriptionsWithoutCompany = useMemo(() => {
-    if (!registrationFieldDescriptions?.company) {
+  const fieldDescriptionsWithoutRobboCustomFields = useMemo(() => {
+    if (!registrationFieldDescriptions) {
       return registrationFieldDescriptions;
     }
-    const { company, ...rest } = registrationFieldDescriptions;
+    const rest = { ...registrationFieldDescriptions };
+    delete rest.company;
+    delete rest.phone_number;
     return rest;
   }, [registrationFieldDescriptions]);
 
@@ -117,6 +123,18 @@ const RegistrationPage = (props) => {
     return {
       ...registrationFieldDescriptions.company,
       label: formatMessage(messages['registration.robbo.company.label']),
+    };
+  }, [registrationFieldDescriptions, formatMessage]);
+
+  const phoneFieldData = useMemo(() => {
+    if (!registrationFieldDescriptions?.phone_number) {
+      return null;
+    }
+    return {
+      ...registrationFieldDescriptions.phone_number,
+      type: 'tel',
+      label: formatMessage(messages['registration.robbo.phone.label']),
+      helpText: formatMessage(messages['registration.robbo.phone.help']),
     };
   }, [registrationFieldDescriptions, formatMessage]);
 
@@ -191,6 +209,7 @@ const RegistrationPage = (props) => {
   useEffect(() => {
     if (backendValidations) {
       const companyInvalidLabel = formatMessage(messages['registration.robbo.company.invalid_error']);
+      const phoneInvalidLabel = formatMessage(messages['registration.robbo.phone.invalid_error']);
       const nameThreeWordsLabel = formatMessage(messages['registration.robbo.name.three_words_error']);
       const localizedValidations = { ...backendValidations };
       if (localizedValidations.name) {
@@ -203,6 +222,12 @@ const RegistrationPage = (props) => {
         localizedValidations.company = normalizeCompanyServerErrorMessage(
           localizedValidations.company,
           companyInvalidLabel,
+        );
+      }
+      if (localizedValidations.phone_number) {
+        localizedValidations.phone_number = normalizePhoneServerErrorMessage(
+          localizedValidations.phone_number,
+          phoneInvalidLabel,
         );
       }
       if (registrationEmbedded) {
@@ -283,6 +308,52 @@ const RegistrationPage = (props) => {
   };
 
   const handleCompanyFieldFocus = (event) => {
+    dismissRegistrationFailureBanner();
+    const { name } = event.target;
+    if (registrationEmbedded) {
+      setTemporaryErrors((prev) => ({ ...prev, [name]: '' }));
+    } else {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handlePhoneFieldChange = (event) => {
+    dismissRegistrationFailureBanner();
+    const { name, value } = event.target;
+    const sanitized = sanitizePhoneInput(value);
+    setConfigurableFormFields((prev) => ({ ...prev, [name]: sanitized }));
+    if (registrationError[name]) {
+      dispatch(clearRegistrationBackendError(name));
+    }
+    if (registrationEmbedded) {
+      setTemporaryErrors((prev) => ({ ...prev, [name]: '' }));
+    } else {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handlePhoneFieldBlur = (event) => {
+    const { name, value } = event.target;
+    const normalized = normalizeRobboPhoneNumber(value);
+    if (normalized !== value) {
+      setConfigurableFormFields((prev) => ({ ...prev, [name]: normalized }));
+    }
+    const fieldMeta = registrationFieldDescriptions[name];
+    const error = fieldMeta
+      ? validatePhoneField(
+        normalized,
+        fieldMeta.invalid_error_message
+          || formatMessage(messages['registration.robbo.phone.invalid_error']),
+      )
+      : '';
+    if (registrationEmbedded) {
+      setTemporaryErrors((prev) => ({ ...prev, [name]: error }));
+    } else {
+      setErrors((prev) => ({ ...prev, [name]: error }));
+    }
+  };
+
+  const handlePhoneFieldFocus = (event) => {
     dismissRegistrationFailureBanner();
     const { name } = event.target;
     if (registrationEmbedded) {
@@ -450,6 +521,17 @@ const RegistrationPage = (props) => {
                   isRequired
                 />
               )}
+              {phoneFieldData && (
+                <FormFieldRenderer
+                  fieldData={phoneFieldData}
+                  value={configurableFormFields.phone_number ?? ''}
+                  onChangeHandler={handlePhoneFieldChange}
+                  handleBlur={handlePhoneFieldBlur}
+                  handleFocus={handlePhoneFieldFocus}
+                  errorMessage={registrationEmbedded ? temporaryErrors.phone_number : errors.phone_number}
+                  isRequired={false}
+                />
+              )}
               {!flags.autoGeneratedUsernameEnabled && (
                 <UsernameField
                   name="username"
@@ -479,7 +561,7 @@ const RegistrationPage = (props) => {
                 setFieldErrors={registrationEmbedded ? setTemporaryErrors : setErrors}
                 setFormFields={setConfigurableFormFields}
                 autoSubmitRegisterForm={autoSubmitRegForm}
-                fieldDescriptions={fieldDescriptionsWithoutCompany}
+                fieldDescriptions={fieldDescriptionsWithoutRobboCustomFields}
                 onDismissRegistrationFailure={dismissRegistrationFailureBanner}
               />
               <StatefulButton

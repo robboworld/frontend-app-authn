@@ -77,6 +77,21 @@ const messages = defineMessages({
     defaultMessage: 'Incorrect company entry',
     description: 'Validation when company contains Latin letters (Robbo)',
   },
+  'registration.robbo.phone.label': {
+    id: 'registration.robbo.phone.label',
+    defaultMessage: 'Phone number',
+    description: 'Optional phone field label on registration (Robbo)',
+  },
+  'registration.robbo.phone.invalid_error': {
+    id: 'registration.robbo.phone.invalid_error',
+    defaultMessage: 'Enter a valid phone number: +7 and 10 digits for Russia, or international format with «+»',
+    description: 'Validation when phone format is invalid (Robbo)',
+  },
+  'registration.robbo.phone.help': {
+    id: 'registration.robbo.phone.help',
+    defaultMessage: 'Russia: +7 and 10 digits (e.g. +79991234567). You can enter 10 digits without country code — we add +7.',
+    description: 'Help text for optional phone field on registration (Robbo)',
+  },
   // Help text
   'help.text.name': {
     id: 'help.text.name',

@@ -1,8 +1,83 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { Form, Icon } from '@openedx/paragon';
+import { Form, Icon, TransitionReplace } from '@openedx/paragon';
 import { ExpandMore } from '@openedx/paragon/icons';
 import PropTypes from 'prop-types';
+
+const TelFormField = ({
+  className,
+  errorMessage,
+  fieldData,
+  handleBlur,
+  handleFocus,
+  onChangeHandler,
+  value,
+}) => {
+  const [hasFocus, setHasFocus] = useState(false);
+  const controlClassName = ['form-group__form-field', className].filter(Boolean).join(' ');
+
+  const onFocus = (e) => {
+    setHasFocus(true);
+    if (handleFocus) { handleFocus(e); }
+  };
+
+  const onBlur = (e) => {
+    setHasFocus(false);
+    if (handleBlur) { handleBlur(e); }
+  };
+
+  return (
+    <Form.Group controlId={fieldData.name} isInvalid={!!errorMessage}>
+      <Form.Control
+        className={controlClassName}
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        name={fieldData.name}
+        value={value}
+        aria-invalid={Boolean(errorMessage)}
+        onChange={(e) => onChangeHandler(e)}
+        floatingLabel={fieldData.label}
+        onBlur={onBlur}
+        onFocus={onFocus}
+      />
+      <TransitionReplace>
+        {hasFocus && fieldData.helpText ? (
+          <Form.Control.Feedback type="default" key="help-text" className="d-block form-text-size">
+            {fieldData.helpText}
+          </Form.Control.Feedback>
+        ) : <div key="empty" />}
+      </TransitionReplace>
+      {errorMessage && (
+        <Form.Control.Feedback id={`${fieldData.name}-error`} type="invalid" className="form-text-size" hasIcon={false}>
+          {errorMessage}
+        </Form.Control.Feedback>
+      )}
+    </Form.Group>
+  );
+};
+
+TelFormField.propTypes = {
+  className: PropTypes.string,
+  errorMessage: PropTypes.string,
+  fieldData: PropTypes.shape({
+    name: PropTypes.string,
+    label: PropTypes.string,
+    helpText: PropTypes.string,
+  }).isRequired,
+  handleBlur: PropTypes.func,
+  handleFocus: PropTypes.func,
+  onChangeHandler: PropTypes.func.isRequired,
+  value: PropTypes.string,
+};
+
+TelFormField.defaultProps = {
+  className: '',
+  errorMessage: '',
+  handleBlur: null,
+  handleFocus: null,
+  value: '',
+};
 
 const FormFieldRenderer = (props) => {
   let formField = null;
@@ -99,6 +174,20 @@ const FormFieldRenderer = (props) => {
       );
       break;
     }
+    case 'tel': {
+      formField = (
+        <TelFormField
+          className={className}
+          errorMessage={errorMessage}
+          fieldData={fieldData}
+          handleBlur={handleOnBlur}
+          handleFocus={handleFocus}
+          onChangeHandler={onChangeHandler}
+          value={value}
+        />
+      );
+      break;
+    }
     case 'checkbox': {
       formField = (
         <Form.Group isInvalid={!!(isRequired && errorMessage)}>
@@ -145,6 +234,7 @@ FormFieldRenderer.propTypes = {
     type: PropTypes.string,
     label: PropTypes.string,
     name: PropTypes.string,
+    helpText: PropTypes.string,
     options: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
   }).isRequired,
   onChangeHandler: PropTypes.func.isRequired,

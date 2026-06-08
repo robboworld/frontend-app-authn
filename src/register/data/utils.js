@@ -5,6 +5,13 @@ import messages from '../messages';
 import validateEmail from '../RegistrationFields/EmailField/validator';
 import validateName from '../RegistrationFields/NameField/validator';
 import validateUsername from '../RegistrationFields/UsernameField/validator';
+import {
+  isValidRobboPhoneNumber,
+  normalizeRobboPhoneNumber,
+  sanitizePhoneInput,
+} from './phoneValidation';
+
+export { normalizeRobboPhoneNumber, sanitizePhoneInput };
 
 /**
  * It validates the password field value
@@ -27,6 +34,12 @@ export const validatePasswordField = (value, formatMessage) => {
 export const COMPANY_INVALID_SERVER_MESSAGES = new Set([
   'Incorrect company entry.',
   'Incorrect company entry',
+]);
+
+export const PHONE_INVALID_SERVER_MESSAGES = new Set([
+  'Enter a valid phone number.',
+  'Enter a valid phone number',
+  "Phone number must start with '+' (optional) followed by digits (0-9) only.",
 ]);
 
 export const NAME_THREE_WORDS_SERVER_MESSAGES = new Set([
@@ -59,12 +72,34 @@ export const normalizeCompanyServerErrorMessage = (message, invalidErrorMessage)
   return message;
 };
 
+export const normalizePhoneServerErrorMessage = (message, invalidErrorMessage) => {
+  if (!message) {
+    return message;
+  }
+  const trimmed = String(message).trim();
+  if (PHONE_INVALID_SERVER_MESSAGES.has(trimmed)) {
+    return invalidErrorMessage;
+  }
+  return message;
+};
+
 export const validateCompanyField = (value, requiredErrorMessage, invalidErrorMessage) => {
   const trimmed = String(value ?? '').trim();
   if (!trimmed) {
     return requiredErrorMessage;
   }
   if (LETTER_REGEX.test(trimmed)) {
+    return invalidErrorMessage;
+  }
+  return '';
+};
+
+export const validatePhoneField = (value, invalidErrorMessage) => {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) {
+    return '';
+  }
+  if (!isValidRobboPhoneNumber(trimmed)) {
     return invalidErrorMessage;
   }
   return '';
@@ -143,6 +178,9 @@ export const isFormValid = (
   }
 
   Object.keys(fieldDescriptions).forEach(key => {
+    if (key === 'phone_number') {
+      return;
+    }
     if (key === 'country' && !configurableFormFields?.country?.displayValue) {
       fieldErrors[key] = formatMessage(messages['empty.country.field.error']);
     } else if (!configurableFormFields[key]) {
@@ -162,6 +200,18 @@ export const isFormValid = (
     );
     if (companyError) {
       fieldErrors.company = companyError;
+      isValid = false;
+    }
+  }
+
+  if (fieldDescriptions.phone_number) {
+    const rawPhone = configurableFormFields.phone_number ?? payload.phone_number ?? '';
+    const phoneValue = rawPhone ? normalizeRobboPhoneNumber(rawPhone) : '';
+    const invalidPhoneMessage = fieldDescriptions.phone_number.invalid_error_message
+      || formatMessage(messages['registration.robbo.phone.invalid_error']);
+    const phoneError = validatePhoneField(phoneValue, invalidPhoneMessage);
+    if (phoneError) {
+      fieldErrors.phone_number = phoneError;
       isValid = false;
     }
   }
@@ -189,6 +239,9 @@ export const prepareRegistrationPayload = (
   Object.keys(configurableFormFields).forEach((fieldName) => {
     if (fieldName === 'country') {
       payload[fieldName] = configurableFormFields[fieldName].countryCode;
+    } else if (fieldName === 'phone_number') {
+      const raw = configurableFormFields[fieldName];
+      payload[fieldName] = raw ? normalizeRobboPhoneNumber(raw) : raw;
     } else {
       payload[fieldName] = configurableFormFields[fieldName];
     }
