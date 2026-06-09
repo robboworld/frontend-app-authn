@@ -1,5 +1,8 @@
 import messages from '../messages';
 
+/** Set to true together with REGISTRATION_EXTRA_FIELDS company='required' on LMS to re-enable. */
+const ENABLE_ROBBO_COMPANY_FIELD = false;
+
 /**
  * Ensures honor + company exist in the field map used for Authn registration.
  * The marketing checkbox is driven only by MFE config; honor/company normally
@@ -34,19 +37,21 @@ export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage
     };
   }
 
-  if (!d.company) {
-    d.company = {
-      name: 'company',
-      type: 'text',
-      label: formatMessage(messages['registration.robbo.company.label']),
-      error_message: formatMessage(messages['registration.robbo.company.required_error']),
-      invalid_error_message: formatMessage(messages['registration.robbo.company.invalid_error']),
-    };
-  } else if (!d.company.invalid_error_message) {
-    d.company = {
-      ...d.company,
-      invalid_error_message: formatMessage(messages['registration.robbo.company.invalid_error']),
-    };
+  if (ENABLE_ROBBO_COMPANY_FIELD) {
+    if (!d.company) {
+      d.company = {
+        name: 'company',
+        type: 'text',
+        label: formatMessage(messages['registration.robbo.company.label']),
+        error_message: formatMessage(messages['registration.robbo.company.required_error']),
+        invalid_error_message: formatMessage(messages['registration.robbo.company.invalid_error']),
+      };
+    } else if (!d.company.invalid_error_message) {
+      d.company = {
+        ...d.company,
+        invalid_error_message: formatMessage(messages['registration.robbo.company.invalid_error']),
+      };
+    }
   }
 
   if (!d.phone_number) {
