@@ -189,21 +189,6 @@ export const isFormValid = (
     if (fieldErrors[key]) { isValid = false; }
   });
 
-  if (fieldDescriptions.company) {
-    const companyValue = configurableFormFields.company ?? payload.company ?? '';
-    const invalidCompanyMessage = fieldDescriptions.company.invalid_error_message
-      || formatMessage(messages['registration.robbo.company.invalid_error']);
-    const companyError = validateCompanyField(
-      companyValue,
-      fieldDescriptions.company.error_message,
-      invalidCompanyMessage,
-    );
-    if (companyError) {
-      fieldErrors.company = companyError;
-      isValid = false;
-    }
-  }
-
   if (fieldDescriptions.phone_number) {
     const rawPhone = configurableFormFields.phone_number ?? payload.phone_number ?? '';
     const phoneValue = rawPhone ? normalizeRobboPhoneNumber(rawPhone) : '';
@@ -251,6 +236,8 @@ export const prepareRegistrationPayload = (
   if (!showMarketingEmailOptInCheckbox) {
     delete payload.marketingEmailsOptIn;
   }
+
+  delete payload.company;
 
   payload.totalRegistrationTime = totalRegistrationTime;
   payload = snakeCaseObject(payload);

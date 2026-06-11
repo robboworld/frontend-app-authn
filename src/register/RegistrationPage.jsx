@@ -27,16 +27,17 @@ import {
   TPA_AUTHENTICATION_FAILURE,
 } from './data/constants';
 import getBackendValidations from './data/selectors';
-import { mergeRobboRegistrationFieldDescriptions } from './data/robboRegistrationFields';
+import {
+  mergeRobboRegistrationFieldDescriptions,
+  omitRobboHiddenRegistrationFields,
+} from './data/robboRegistrationFields';
 import {
   isFormValid,
-  normalizeCompanyServerErrorMessage,
   normalizeNameServerErrorMessage,
   normalizePhoneServerErrorMessage,
   prepareRegistrationPayload,
   normalizeRobboPhoneNumber,
   sanitizePhoneInput,
-  validateCompanyField,
   validatePhoneField,
 } from './data/utils';
 import messages from './messages';
@@ -110,21 +111,10 @@ const RegistrationPage = (props) => {
     if (!registrationFieldDescriptions) {
       return registrationFieldDescriptions;
     }
-    const rest = { ...registrationFieldDescriptions };
-    delete rest.company;
+    const rest = omitRobboHiddenRegistrationFields(registrationFieldDescriptions);
     delete rest.phone_number;
     return rest;
   }, [registrationFieldDescriptions]);
-
-  const companyFieldData = useMemo(() => {
-    if (!registrationFieldDescriptions?.company) {
-      return null;
-    }
-    return {
-      ...registrationFieldDescriptions.company,
-      label: formatMessage(messages['registration.robbo.company.label']),
-    };
-  }, [registrationFieldDescriptions, formatMessage]);
 
   const phoneFieldData = useMemo(() => {
     if (!registrationFieldDescriptions?.phone_number) {
@@ -208,7 +198,6 @@ const RegistrationPage = (props) => {
 
   useEffect(() => {
     if (backendValidations) {
-      const companyInvalidLabel = formatMessage(messages['registration.robbo.company.invalid_error']);
       const phoneInvalidLabel = formatMessage(messages['registration.robbo.phone.invalid_error']);
       const nameThreeWordsLabel = formatMessage(messages['registration.robbo.name.three_words_error']);
       const localizedValidations = { ...backendValidations };
@@ -216,12 +205,6 @@ const RegistrationPage = (props) => {
         localizedValidations.name = normalizeNameServerErrorMessage(
           localizedValidations.name,
           nameThreeWordsLabel,
-        );
-      }
-      if (localizedValidations.company) {
-        localizedValidations.company = normalizeCompanyServerErrorMessage(
-          localizedValidations.company,
-          companyInvalidLabel,
         );
       }
       if (localizedValidations.phone_number) {
@@ -272,49 +255,6 @@ const RegistrationPage = (props) => {
     }
     setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
     setFormFields(prevState => ({ ...prevState, [name]: value }));
-  };
-
-  const handleCompanyFieldChange = (event) => {
-    dismissRegistrationFailureBanner();
-    const { name, value } = event.target;
-    const sanitized = value.replace(/[a-zA-Z]/g, '');
-    setConfigurableFormFields((prev) => ({ ...prev, [name]: sanitized }));
-    if (registrationError[name]) {
-      dispatch(clearRegistrationBackendError(name));
-    }
-    if (registrationEmbedded) {
-      setTemporaryErrors((prev) => ({ ...prev, [name]: '' }));
-    } else {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const handleCompanyFieldBlur = (event) => {
-    const { name, value } = event.target;
-    const fieldMeta = registrationFieldDescriptions[name];
-    const error = fieldMeta?.error_message
-      ? validateCompanyField(
-        value,
-        fieldMeta.error_message,
-        fieldMeta.invalid_error_message
-          || formatMessage(messages['registration.robbo.company.invalid_error']),
-      )
-      : '';
-    if (registrationEmbedded) {
-      setTemporaryErrors((prev) => ({ ...prev, [name]: error }));
-    } else {
-      setErrors((prev) => ({ ...prev, [name]: error }));
-    }
-  };
-
-  const handleCompanyFieldFocus = (event) => {
-    dismissRegistrationFailureBanner();
-    const { name } = event.target;
-    if (registrationEmbedded) {
-      setTemporaryErrors((prev) => ({ ...prev, [name]: '' }));
-    } else {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
   };
 
   const handlePhoneFieldChange = (event) => {
@@ -510,17 +450,6 @@ const RegistrationPage = (props) => {
                 helpText={[formatMessage(messages['help.text.email'])]}
                 floatingLabel={formatMessage(messages['registration.email.label'])}
               />
-              {companyFieldData && (
-                <FormFieldRenderer
-                  fieldData={companyFieldData}
-                  value={configurableFormFields.company ?? ''}
-                  onChangeHandler={handleCompanyFieldChange}
-                  handleBlur={handleCompanyFieldBlur}
-                  handleFocus={handleCompanyFieldFocus}
-                  errorMessage={registrationEmbedded ? temporaryErrors.company : errors.company}
-                  isRequired
-                />
-              )}
               {phoneFieldData && (
                 <FormFieldRenderer
                   fieldData={phoneFieldData}

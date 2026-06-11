@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 
 import { FormFieldRenderer } from '../../field-renderer';
 import { FIELDS } from '../data/constants';
+import { ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES } from '../data/robboRegistrationFields';
 import messages from '../messages';
 import { CountryField, HonorCode, TermsOfService } from '../RegistrationFields';
 
@@ -130,6 +131,9 @@ const ConfigurableRegistrationForm = (props) => {
 
   if (flags.showConfigurableRegistrationFields) {
     Object.keys(fieldDescriptions).forEach(fieldName => {
+      if (ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES.includes(fieldName)) {
+        return;
+      }
       const fieldData = fieldDescriptions[fieldName];
       switch (fieldData.name) {
         case FIELDS.COUNTRY:

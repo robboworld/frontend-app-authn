@@ -44,6 +44,9 @@ const shouldRedirectToCatalog = (redirectUrl = '') => {
   }
 
   const normalizedPath = (pathname || '/').replace(/\/+$/, '') || '/';
+  if (normalizedPath.endsWith('/learner-dashboard')) {
+    return false;
+  }
   if (normalizedPath === '/dashboard') {
     return true;
   }
