@@ -5,6 +5,8 @@
  * Part of the Robbo Open edX distribution. See NOTICE at repository root.
  */
 
+import { isValidPhoneNumber as isValidLibPhoneNumber } from 'libphonenumber-js';
+
 /** Russia: +7 and 10 national digits. */
 export const RU_PHONE_PATTERN = /^\+7\d{10}$/;
 /** Other countries: E.164, 8–15 digits after '+'. */
@@ -49,6 +51,13 @@ export function isValidRobboPhoneNumber(value) {
   const normalized = normalizeRobboPhoneNumber(value);
   if (!normalized) {
     return true;
+  }
+  try {
+    if (isValidLibPhoneNumber(normalized)) {
+      return true;
+    }
+  } catch {
+    // Fall through to regex fallback for pasted or legacy values.
   }
   return RU_PHONE_PATTERN.test(normalized) || INTL_PHONE_PATTERN.test(normalized);
 }

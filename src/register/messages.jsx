@@ -84,13 +84,18 @@ const messages = defineMessages({
   },
   'registration.robbo.phone.invalid_error': {
     id: 'registration.robbo.phone.invalid_error',
-    defaultMessage: 'Enter a valid phone number: +7 and 10 digits for Russia, or international format with «+»',
+    defaultMessage: 'Enter a valid phone number for the selected country',
     description: 'Validation when phone format is invalid (Robbo)',
   },
   'registration.robbo.phone.help': {
     id: 'registration.robbo.phone.help',
-    defaultMessage: 'Russia: +7 and 10 digits (e.g. +79991234567). You can enter 10 digits without country code — we add +7.',
+    defaultMessage: 'Select your country code, then enter your phone number.',
     description: 'Help text for optional phone field on registration (Robbo)',
+  },
+  'registration.robbo.phone.country.aria': {
+    id: 'registration.robbo.phone.country.aria',
+    defaultMessage: 'Country code',
+    description: 'Accessible label for phone country code selector (Robbo)',
   },
   // Help text
   'help.text.name': {

@@ -204,3 +204,170 @@ $robbo-form-checkbox-indeterminate-svg: url("data:image/svg+xml,%3Csvg xmlns='ht
     border: none;
   }
 }
+
+.robbo-phone-input.PhoneInput {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid $input-border-color;
+  border-radius: $input-border-radius;
+  background-color: $input-bg;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  &:focus-within,
+  &.PhoneInput--focus {
+    border-color: $robbo-brand-primary;
+    box-shadow: 0 0 0 1px rgba($robbo-brand-primary, 0.25);
+  }
+
+  .PhoneInputInput {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    margin: 0;
+    padding: $input-padding-y $input-padding-x;
+    font: inherit;
+    background: transparent;
+    color: $input-color;
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+      box-shadow: none;
+    }
+
+    &::placeholder {
+      color: $input-placeholder-color;
+    }
+  }
+}
+
+.robbo-phone-country {
+  position: relative;
+  align-self: stretch;
+  flex: 0 0 auto;
+  border-right: 1px solid $input-border-color;
+}
+
+.robbo-phone-country__trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 100%;
+  margin: 0;
+  padding: $input-padding-y 0.75rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+}
+
+.robbo-phone-country__flag {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.robbo-phone-country__arrow {
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.65;
+}
+
+.robbo-phone-country--open .robbo-phone-country__arrow {
+  transform: rotate(180deg);
+  opacity: 1;
+  color: $robbo-brand-primary-dark;
+}
+
+.robbo-phone-country__menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  z-index: 1050;
+  min-width: 16rem;
+  max-width: min(20rem, 90vw);
+  max-height: 15rem;
+  overflow: auto;
+  margin: 0;
+  padding: 0.375rem;
+  list-style: none;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.625rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.robbo-phone-country__option {
+  margin: 0;
+}
+
+.robbo-phone-country__option-button {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: $robbo-brand-coal;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    background: $authn-bg-mint-soft;
+    color: $robbo-brand-primary-dark;
+  }
+}
+
+.robbo-phone-country__option--highlighted .robbo-phone-country__option-button {
+  background: $authn-bg-mint-soft;
+  color: $robbo-brand-primary-dark;
+}
+
+.robbo-phone-country__option-flag {
+  flex: 0 0 auto;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.robbo-phone-country__option-label {
+  min-width: 0;
+}
+
+#registration-form .pgn__form-group .robbo-phone-input.form-group__form-field {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.pgn__form-group:has(.robbo-phone-input) > .pgn__form-label-floating {
+  margin-bottom: 0.5rem;
+}
+
+.robbo-auth-standalone-shell .content .robbo-phone-input.PhoneInput:focus-within,
+.robbo-auth-standalone-shell .content .robbo-phone-input.PhoneInput.PhoneInput--focus {
+  border-color: $robbo-brand-primary;
+  box-shadow: 0 0 0 1px rgba(21, 128, 61, 0.25);
+}
