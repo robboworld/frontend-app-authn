@@ -34,6 +34,10 @@ export const NAME_THREE_WORDS_SERVER_MESSAGES = new Set([
   'Full name must contain three words separated by spaces',
 ]);
 
+export const USERNAME_TAKEN_SERVER_MESSAGES = new Set([
+  'It looks like this username is already taken',
+]);
+
 /**
  * Map LMS company field error to MFE locale (API may return English).
  */
@@ -59,10 +63,21 @@ export const normalizeCompanyServerErrorMessage = (message, invalidErrorMessage)
   return message;
 };
 
-export const validateCompanyField = (value, requiredErrorMessage, invalidErrorMessage) => {
+export const normalizeUsernameServerErrorMessage = (message, takenErrorMessage) => {
+  if (!message) {
+    return message;
+  }
+  const trimmed = String(message).trim();
+  if (USERNAME_TAKEN_SERVER_MESSAGES.has(trimmed)) {
+    return takenErrorMessage;
+  }
+  return message;
+};
+
+export const validateCompanyField = (value, requiredErrorMessage, invalidErrorMessage, required = true) => {
   const trimmed = String(value ?? '').trim();
   if (!trimmed) {
-    return requiredErrorMessage;
+    return required && requiredErrorMessage ? requiredErrorMessage : '';
   }
   if (LETTER_REGEX.test(trimmed)) {
     return invalidErrorMessage;
@@ -153,12 +168,14 @@ export const isFormValid = (
 
   if (fieldDescriptions.company) {
     const companyValue = configurableFormFields.company ?? payload.company ?? '';
+    const companyRequired = Boolean(fieldDescriptions.company.error_message);
     const invalidCompanyMessage = fieldDescriptions.company.invalid_error_message
       || formatMessage(messages['registration.robbo.company.invalid_error']);
     const companyError = validateCompanyField(
       companyValue,
       fieldDescriptions.company.error_message,
       invalidCompanyMessage,
+      companyRequired,
     );
     if (companyError) {
       fieldErrors.company = companyError;

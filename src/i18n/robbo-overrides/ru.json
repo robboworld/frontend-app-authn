@@ -6,6 +6,7 @@
   "registration.robbo.company.label": "Название компании",
   "registration.robbo.company.required_error": "Укажите название компании",
   "registration.robbo.company.invalid_error": "Некорректная название компании",
+  "registration.robbo.username.taken_error": "Похоже, этот логин уже занят",
   "registration.opt.in.label": "Я согласен(а) получать новости и рассылки",
   "registration.robbo.honor.consent": "Я даю согласие на {personalDataLink} на условиях {privacyLink}",
   "registration.robbo.honor.personal_data": "обработку своих персональных данных",

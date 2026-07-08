@@ -77,6 +77,11 @@ const messages = defineMessages({
     defaultMessage: 'Incorrect company entry',
     description: 'Validation when company contains Latin letters (Robbo)',
   },
+  'registration.robbo.username.taken_error': {
+    id: 'registration.robbo.username.taken_error',
+    defaultMessage: 'It looks like this username is already taken',
+    description: 'LMS username conflict on registration (Robbo RU localization)',
+  },
   // Help text
   'help.text.name': {
     id: 'help.text.name',
