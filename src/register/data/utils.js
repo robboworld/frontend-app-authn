@@ -62,6 +62,21 @@ export const normalizeNameServerErrorMessage = (message, threeWordsErrorMessage)
   return message;
 };
 
+export const USERNAME_TAKEN_SERVER_MESSAGES = new Set([
+  'It looks like this username is already taken',
+]);
+
+export const normalizeUsernameServerErrorMessage = (message, takenErrorMessage) => {
+  if (!message) {
+    return message;
+  }
+  const trimmed = String(message).trim();
+  if (USERNAME_TAKEN_SERVER_MESSAGES.has(trimmed)) {
+    return takenErrorMessage;
+  }
+  return message;
+};
+
 export const normalizeCompanyServerErrorMessage = (message, invalidErrorMessage) => {
   if (!message) {
     return message;

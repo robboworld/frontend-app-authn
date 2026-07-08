@@ -33,6 +33,7 @@ import {
 import {
   isFormValid,
   normalizeNameServerErrorMessage,
+  normalizeUsernameServerErrorMessage,
   normalizePhoneServerErrorMessage,
   prepareRegistrationPayload,
   normalizeRobboPhoneNumber,
@@ -89,7 +90,7 @@ const RegistrationPage = (props) => {
   const fieldDescriptions = useSelector(state => state.commonComponents.fieldDescriptions);
   const registrationFieldDescriptions = useMemo(
     () => mergeRobboRegistrationFieldDescriptions(fieldDescriptions, formatMessage, {
-      requireMarketingOptIn: getConfig().MARKETING_EMAILS_OPT_IN,
+      requireMarketingOptIn: false,
     }),
     [fieldDescriptions, formatMessage],
   );
@@ -203,11 +204,18 @@ const RegistrationPage = (props) => {
     if (backendValidations) {
       const phoneInvalidLabel = formatMessage(messages['registration.robbo.phone.invalid_error']);
       const nameThreeWordsLabel = formatMessage(messages['registration.robbo.name.three_words_error']);
+      const usernameTakenLabel = formatMessage(messages['registration.robbo.username.taken_error']);
       const localizedValidations = { ...backendValidations };
       if (localizedValidations.name) {
         localizedValidations.name = normalizeNameServerErrorMessage(
           localizedValidations.name,
           nameThreeWordsLabel,
+        );
+      }
+      if (localizedValidations.username) {
+        localizedValidations.username = normalizeUsernameServerErrorMessage(
+          localizedValidations.username,
+          usernameTakenLabel,
         );
       }
       if (localizedValidations.phone_number) {
