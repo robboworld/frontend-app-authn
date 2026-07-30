@@ -105,6 +105,72 @@ export const validatePhoneField = (value, invalidErrorMessage) => {
   return '';
 };
 
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Full years of age from ISO date of birth (YYYY-MM-DD) to today.
+ * @param {string} isoDate
+ * @returns {number|null}
+ */
+export const getAgeFromDateOfBirth = (isoDate) => {
+  const trimmed = String(isoDate ?? '').trim();
+  if (!ISO_DATE_RE.test(trimmed)) {
+    return null;
+  }
+  const [year, month, day] = trimmed.split('-').map(Number);
+  const dob = new Date(year, month - 1, day);
+  if (
+    Number.isNaN(dob.getTime())
+    || dob.getFullYear() !== year
+    || dob.getMonth() !== month - 1
+    || dob.getDate() !== day
+  ) {
+    return null;
+  }
+  const today = new Date();
+  let age = today.getFullYear() - year;
+  const monthDiff = today.getMonth() - (month - 1);
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < day)) {
+    age -= 1;
+  }
+  return age;
+};
+
+/**
+ * Validate required date of birth (ISO YYYY-MM-DD).
+ * @param {string} value
+ * @param {function} formatMessage
+ * @returns {string} error message or empty string
+ */
+export const validateDateOfBirthField = (value, formatMessage) => {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) {
+    return formatMessage(messages['registration.robbo.dob.required_error']);
+  }
+  if (!ISO_DATE_RE.test(trimmed)) {
+    return formatMessage(messages['registration.robbo.dob.invalid_error']);
+  }
+  const [year, month, day] = trimmed.split('-').map(Number);
+  const dob = new Date(year, month - 1, day);
+  if (
+    Number.isNaN(dob.getTime())
+    || dob.getFullYear() !== year
+    || dob.getMonth() !== month - 1
+    || dob.getDate() !== day
+  ) {
+    return formatMessage(messages['registration.robbo.dob.invalid_error']);
+  }
+  if (year < 1900) {
+    return formatMessage(messages['registration.robbo.dob.invalid_error']);
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (dob > today) {
+    return formatMessage(messages['registration.robbo.dob.future_error']);
+  }
+  return '';
+};
+
 /**
  * It accepts complete registration data as payload and checks if the form is valid.
  * @param payload
@@ -178,7 +244,7 @@ export const isFormValid = (
   }
 
   Object.keys(fieldDescriptions).forEach(key => {
-    if (key === 'phone_number') {
+    if (key === 'phone_number' || key === 'date_of_birth') {
       return;
     }
     if (key === 'country' && !configurableFormFields?.country?.displayValue) {
@@ -197,6 +263,15 @@ export const isFormValid = (
     const phoneError = validatePhoneField(phoneValue, invalidPhoneMessage);
     if (phoneError) {
       fieldErrors.phone_number = phoneError;
+      isValid = false;
+    }
+  }
+
+  if (fieldDescriptions.date_of_birth) {
+    const dobValue = configurableFormFields.date_of_birth ?? payload.date_of_birth ?? '';
+    const dobError = validateDateOfBirthField(dobValue, formatMessage);
+    if (dobError) {
+      fieldErrors.date_of_birth = dobError;
       isValid = false;
     }
   }

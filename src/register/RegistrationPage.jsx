@@ -32,6 +32,7 @@ import {
 } from './data/robboRegistrationFields';
 import {
   isFormValid,
+  getAgeFromDateOfBirth,
   normalizeNameServerErrorMessage,
   normalizePhoneServerErrorMessage,
   prepareRegistrationPayload,
@@ -39,7 +40,9 @@ import {
   validatePhoneField,
 } from './data/utils';
 import messages from './messages';
-import { EmailField, NameField, PhoneField, UsernameField } from './RegistrationFields';
+import {
+  DateOfBirthField, EmailField, NameField, PhoneField, UsernameField,
+} from './RegistrationFields';
 import {
   InstitutionLogistration,
   PasswordField,
@@ -111,6 +114,7 @@ const RegistrationPage = (props) => {
     }
     const rest = omitRobboHiddenRegistrationFields(registrationFieldDescriptions);
     delete rest.phone_number;
+    delete rest.date_of_birth;
     return rest;
   }, [registrationFieldDescriptions]);
 
@@ -126,6 +130,8 @@ const RegistrationPage = (props) => {
     };
   }, [registrationFieldDescriptions, formatMessage]);
 
+  const showDateOfBirthField = Boolean(registrationFieldDescriptions?.date_of_birth);
+
   const [formFields, setFormFields] = useState({ ...backedUpFormData.formFields });
   const [configurableFormFields, setConfigurableFormFields] = useState({ ...backedUpFormData.configurableFormFields });
   const [errors, setErrors] = useState({ ...backedUpFormData.errors });
@@ -134,6 +140,14 @@ const RegistrationPage = (props) => {
   const registrationInFlight = useRef(false);
   // temporary error state for embedded experience because we don't want to show errors on blur
   const [temporaryErrors, setTemporaryErrors] = useState({ ...backedUpFormData.errors });
+
+  const emailFloatingLabel = useMemo(() => {
+    const age = getAgeFromDateOfBirth(configurableFormFields?.date_of_birth);
+    if (age !== null && age < 18) {
+      return formatMessage(messages['registration.robbo.email.parent_label']);
+    }
+    return formatMessage(messages['registration.email.label']);
+  }, [configurableFormFields?.date_of_birth, formatMessage]);
 
   const { cta, host } = queryParams;
   const buttonLabel = cta
@@ -253,6 +267,20 @@ const RegistrationPage = (props) => {
     }
     setErrors(prevErrors => ({ ...prevErrors, [name]: '' }));
     setFormFields(prevState => ({ ...prevState, [name]: value }));
+  };
+
+  const handleDateOfBirthChange = (event) => {
+    dismissRegistrationFailureBanner();
+    const { name, value } = event.target;
+    setConfigurableFormFields((prev) => ({ ...prev, [name]: value }));
+    if (registrationError[name]) {
+      dispatch(clearRegistrationBackendError(name));
+    }
+    if (registrationEmbedded) {
+      setTemporaryErrors((prev) => ({ ...prev, [name]: '' }));
+    } else {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handlePhoneFieldChange = (name, value) => {
@@ -434,6 +462,15 @@ const RegistrationPage = (props) => {
                 helpText={[formatMessage(messages['help.text.name'])]}
                 floatingLabel={formatMessage(messages['registration.fullname.label'])}
               />
+              {showDateOfBirthField && (
+                <DateOfBirthField
+                  name="date_of_birth"
+                  value={configurableFormFields.date_of_birth ?? ''}
+                  handleChange={handleDateOfBirthChange}
+                  handleErrorChange={handleErrorChange}
+                  errorMessage={registrationEmbedded ? temporaryErrors.date_of_birth : errors.date_of_birth}
+                />
+              )}
               <EmailField
                 name="email"
                 value={formFields.email}
@@ -442,7 +479,7 @@ const RegistrationPage = (props) => {
                 handleChange={handleOnChange}
                 errorMessage={errors.email}
                 helpText={[formatMessage(messages['help.text.email'])]}
-                floatingLabel={formatMessage(messages['registration.email.label'])}
+                floatingLabel={emailFloatingLabel}
               />
               {phoneFieldData && (
                 <PhoneField

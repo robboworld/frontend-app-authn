@@ -68,5 +68,22 @@ export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage
     };
   }
 
+  if (!d.date_of_birth) {
+    d.date_of_birth = {
+      name: 'date_of_birth',
+      type: 'text',
+      label: formatMessage(messages['registration.robbo.dob.label']),
+      error_message: formatMessage(messages['registration.robbo.dob.required_error']),
+      required: true,
+    };
+  } else {
+    d.date_of_birth = {
+      ...d.date_of_birth,
+      label: d.date_of_birth.label || formatMessage(messages['registration.robbo.dob.label']),
+      error_message: d.date_of_birth.error_message
+        || formatMessage(messages['registration.robbo.dob.required_error']),
+    };
+  }
+
   return d;
 }
