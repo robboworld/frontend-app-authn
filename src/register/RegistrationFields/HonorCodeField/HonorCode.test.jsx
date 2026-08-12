@@ -54,6 +54,6 @@ describe('HonorCodeTest', () => {
     );
     const el = container.querySelector('#honor-code-tos');
     expect(el).not.toBeNull();
-    expect(container.textContent).toContain('the processing of my personal data');
+    expect(container.textContent).toContain('terms of service');
   });
 });

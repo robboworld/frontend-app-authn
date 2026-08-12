@@ -21,13 +21,30 @@ export function sanitizePhoneInput(value) {
   return digits ? `+${digits}` : '';
 }
 
+/**
+ * Russian mobile trunk: users type 89… instead of +79….
+ * As soon as the digits start with 89, rewrite to +79… so the number is
+ * treated as Russian (+7 / national 9…).
+ */
+export function rewriteRuLeadingEightyNine(value) {
+  const raw = String(value ?? '');
+  const digits = raw.replace(/\D/g, '');
+  if (!digits.startsWith('89')) {
+    return raw;
+  }
+  return `+79${digits.slice(2)}`;
+}
+
+/** @deprecated Use rewriteRuLeadingEightyNine */
+export const rewriteRuLeadingEight = rewriteRuLeadingEightyNine;
+
 /** Strip formatting from E.164 value (PhoneInput always includes "+"). */
 export function normalizeRobboPhoneNumber(value) {
-  const trimmed = String(value ?? '').trim();
-  if (!trimmed.startsWith('+')) {
+  const rewritten = rewriteRuLeadingEightyNine(String(value ?? '').trim());
+  if (!rewritten.startsWith('+')) {
     return '';
   }
-  const digits = trimmed.replace(/\D/g, '');
+  const digits = rewritten.replace(/\D/g, '');
   if (!digits) {
     return '';
   }

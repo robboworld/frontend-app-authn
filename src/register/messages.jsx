@@ -44,8 +44,8 @@ const messages = defineMessages({
   },
   'registration.robbo.honor.personal_data': {
     id: 'registration.robbo.honor.personal_data',
-    defaultMessage: 'the processing of my personal data',
-    description: 'Link text for personal data document (Robbo landing)',
+    defaultMessage: 'terms of service',
+    description: 'Link text for Terms of Service (Robbo registration consent)',
   },
   'registration.robbo.honor.privacy': {
     id: 'registration.robbo.honor.privacy',

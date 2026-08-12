@@ -124,7 +124,7 @@
   "registration.password.label": "Придумайте пароль",
   "registration.robbo.company.label": "Название компании",
   "registration.robbo.honor.consent": "Я даю согласие на {personalDataLink} на условиях {privacyLink}",
-  "registration.robbo.honor.personal_data": "обработку своих персональных данных",
+  "registration.robbo.honor.personal_data": "условия использования",
   "registration.robbo.honor.privacy": "политики конфиденциальности",
   "registration.robbo.honor.required_error": "Необходимо согласие на обработку персональных данных",
   "registration.robbo.marketing.required_error": "Необходимо согласие на получение новостей и рассылок",

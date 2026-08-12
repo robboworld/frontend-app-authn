@@ -34,36 +34,27 @@ const HonorCode = (props) => {
             description="Robbo: same legal links as guest landing #registration"
             defaultMessage="I give consent to {personalDataLink} on the terms of {privacyLink}"
             values={{
-              // Explicit spaces: FormattedMessage + nowrap can collapse spaces next to inline links
               personalDataLink: (
-                <>
-                  {' '}
-                  <Hyperlink
-                    className="inline-link"
-                    destination={agreeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    showLaunchIcon={false}
-                  >
-                    {formatMessage(messages['registration.robbo.honor.personal_data'])}
-                  </Hyperlink>
-                  {' '}
-                </>
+                <Hyperlink
+                  className="inline-link"
+                  destination={agreeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  showLaunchIcon={false}
+                >
+                  {formatMessage(messages['registration.robbo.honor.personal_data'])}
+                </Hyperlink>
               ),
               privacyLink: (
-                <>
-                  {' '}
-                  <Hyperlink
-                    className="inline-link"
-                    destination={policyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    showLaunchIcon={false}
-                  >
-                    {formatMessage(messages['registration.robbo.honor.privacy'])}
-                  </Hyperlink>
-                  {' '}
-                </>
+                <Hyperlink
+                  className="inline-link"
+                  destination={policyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  showLaunchIcon={false}
+                >
+                  {formatMessage(messages['registration.robbo.honor.privacy'])}
+                </Hyperlink>
               ),
             }}
           />
