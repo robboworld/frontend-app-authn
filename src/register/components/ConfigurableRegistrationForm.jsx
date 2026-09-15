@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 import { FormFieldRenderer } from '../../field-renderer';
 import { FIELDS } from '../data/constants';
-import { ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES } from '../data/robboRegistrationFields';
+import { omitRobboHiddenRegistrationFields, ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES } from '../data/robboRegistrationFields';
 import messages from '../messages';
 import { CountryField, HonorCode, TermsOfService } from '../RegistrationFields';
 
@@ -35,6 +35,11 @@ const ConfigurableRegistrationForm = (props) => {
     onDismissRegistrationFailure,
   } = props;
 
+  const visibleFieldDescriptions = useMemo(
+    () => omitRobboHiddenRegistrationFields(fieldDescriptions),
+    [fieldDescriptions],
+  );
+
   /** The reason for adding the entry 'United States' is that Chrome browser aut-fill the form with the 'Unites
   States' instead of 'United States of America' which does not exist in country dropdown list and gets the user
   confused and unable to create an account. So we added the United States entry in the dropdown list.
@@ -46,7 +51,7 @@ const ConfigurableRegistrationForm = (props) => {
 
   const formFieldDescriptions = [];
   const honorCode = [];
-  const hasDynamicApiFields = fieldDescriptions && Object.keys(fieldDescriptions).length > 0;
+  const hasDynamicApiFields = visibleFieldDescriptions && Object.keys(visibleFieldDescriptions).length > 0;
   const flags = {
     // Treat as on if config says so OR backend already sent registration field descriptions
     // (avoids empty form when process.env was stripped at MFE build time).
@@ -63,13 +68,13 @@ const ConfigurableRegistrationForm = (props) => {
    */
   useEffect(() => {
     if (autoSubmitRegistrationForm) {
-      if (Object.keys(fieldDescriptions).includes(FIELDS.HONOR_CODE)) {
+      if (Object.keys(visibleFieldDescriptions).includes(FIELDS.HONOR_CODE)) {
         setFormFields(prevState => ({
           ...prevState,
           [FIELDS.HONOR_CODE]: true,
         }));
       }
-      if (Object.keys(fieldDescriptions).includes(FIELDS.TERMS_OF_SERVICE)) {
+      if (Object.keys(visibleFieldDescriptions).includes(FIELDS.TERMS_OF_SERVICE)) {
         setFormFields(prevState => ({
           ...prevState,
           [FIELDS.TERMS_OF_SERVICE]: true,
@@ -110,11 +115,11 @@ const ConfigurableRegistrationForm = (props) => {
     const { name, value, type } = event.target;
     let error = '';
     if (type === 'checkbox') {
-      if (!event.target.checked && fieldDescriptions[name]?.error_message) {
-        error = fieldDescriptions[name].error_message;
+      if (!event.target.checked && visibleFieldDescriptions[name]?.error_message) {
+        error = visibleFieldDescriptions[name].error_message;
       }
-    } else if ((!value || !String(value).trim()) && fieldDescriptions[name]?.error_message) {
-      error = fieldDescriptions[name].error_message;
+    } else if ((!value || !String(value).trim()) && visibleFieldDescriptions[name]?.error_message) {
+      error = visibleFieldDescriptions[name].error_message;
     } else if (name === 'confirm_email' && value !== email) {
       error = formatMessage(messages['email.do.not.match']);
     }
@@ -130,11 +135,11 @@ const ConfigurableRegistrationForm = (props) => {
   };
 
   if (flags.showConfigurableRegistrationFields) {
-    Object.keys(fieldDescriptions).forEach(fieldName => {
+    Object.keys(visibleFieldDescriptions).forEach(fieldName => {
       if (ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES.includes(fieldName)) {
         return;
       }
-      const fieldData = fieldDescriptions[fieldName];
+      const fieldData = visibleFieldDescriptions[fieldName];
       switch (fieldData.name) {
         case FIELDS.COUNTRY:
           showCountryField = true;
@@ -169,7 +174,7 @@ const ConfigurableRegistrationForm = (props) => {
           );
           break;
         case 'marketingEmailsOptIn': {
-          const marketingRequired = Boolean(fieldDescriptions?.marketingEmailsOptIn);
+          const marketingRequired = Boolean(visibleFieldDescriptions?.marketingEmailsOptIn);
           formFieldDescriptions.push(
             <span key={fieldData.name}>
               <FormFieldRenderer
@@ -224,7 +229,7 @@ const ConfigurableRegistrationForm = (props) => {
     );
   }
 
-  if (flags.showMarketingEmailOptInCheckbox && !fieldDescriptions?.marketingEmailsOptIn) {
+  if (flags.showMarketingEmailOptInCheckbox && !visibleFieldDescriptions?.marketingEmailsOptIn) {
     formFieldDescriptions.push(
       <span key="marketing_email_opt_in">
         <FormFieldRenderer

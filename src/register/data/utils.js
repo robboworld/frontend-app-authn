@@ -10,6 +10,7 @@ import {
   normalizeRobboPhoneNumber,
   sanitizePhoneInput,
 } from './phoneValidation';
+import { omitRobboHiddenRegistrationFields } from './robboRegistrationFields';
 
 export { normalizeRobboPhoneNumber, sanitizePhoneInput };
 
@@ -243,35 +244,28 @@ export const isFormValid = (
     isValid = false;
   }
 
-  Object.keys(fieldDescriptions).forEach(key => {
-    if (key === 'phone_number' || key === 'date_of_birth') {
+  const visibleFieldDescriptions = omitRobboHiddenRegistrationFields(fieldDescriptions);
+
+  Object.keys(visibleFieldDescriptions).forEach(key => {
+    if (key === 'phone_number') {
       return;
     }
     if (key === 'country' && !configurableFormFields?.country?.displayValue) {
       fieldErrors[key] = formatMessage(messages['empty.country.field.error']);
     } else if (!configurableFormFields[key]) {
-      fieldErrors[key] = fieldDescriptions[key].error_message;
+      fieldErrors[key] = visibleFieldDescriptions[key].error_message;
     }
     if (fieldErrors[key]) { isValid = false; }
   });
 
-  if (fieldDescriptions.phone_number) {
+  if (visibleFieldDescriptions.phone_number) {
     const rawPhone = configurableFormFields.phone_number ?? payload.phone_number ?? '';
     const phoneValue = rawPhone ? normalizeRobboPhoneNumber(rawPhone) : '';
-    const invalidPhoneMessage = fieldDescriptions.phone_number.invalid_error_message
+    const invalidPhoneMessage = visibleFieldDescriptions.phone_number.invalid_error_message
       || formatMessage(messages['registration.robbo.phone.invalid_error']);
     const phoneError = validatePhoneField(phoneValue, invalidPhoneMessage);
     if (phoneError) {
       fieldErrors.phone_number = phoneError;
-      isValid = false;
-    }
-  }
-
-  if (fieldDescriptions.date_of_birth) {
-    const dobValue = configurableFormFields.date_of_birth ?? payload.date_of_birth ?? '';
-    const dobError = validateDateOfBirthField(dobValue, formatMessage);
-    if (dobError) {
-      fieldErrors.date_of_birth = dobError;
       isValid = false;
     }
   }

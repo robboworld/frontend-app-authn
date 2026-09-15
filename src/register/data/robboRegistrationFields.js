@@ -1,7 +1,7 @@
 import messages from '../messages';
 
 /** Registration fields removed from Authn UI (LMS may still list them in stale site config). */
-export const ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES = ['company', 'date_of_birth'];
+export const ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES = ['company', 'date_of_birth', 'year_of_birth'];
 
 /**
  * @param {Object|null|undefined} fields
