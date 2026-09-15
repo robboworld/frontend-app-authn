@@ -1,7 +1,7 @@
 import messages from '../messages';
 
 /** Registration fields removed from Authn UI (LMS may still list them in stale site config). */
-export const ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES = ['company'];
+export const ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES = ['company', 'date_of_birth'];
 
 /**
  * @param {Object|null|undefined} fields
@@ -68,22 +68,5 @@ export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage
     };
   }
 
-  if (!d.date_of_birth) {
-    d.date_of_birth = {
-      name: 'date_of_birth',
-      type: 'text',
-      label: formatMessage(messages['registration.robbo.dob.label']),
-      error_message: formatMessage(messages['registration.robbo.dob.required_error']),
-      required: true,
-    };
-  } else {
-    d.date_of_birth = {
-      ...d.date_of_birth,
-      label: d.date_of_birth.label || formatMessage(messages['registration.robbo.dob.label']),
-      error_message: d.date_of_birth.error_message
-        || formatMessage(messages['registration.robbo.dob.required_error']),
-    };
-  }
-
-  return d;
+  return omitRobboHiddenRegistrationFields(d);
 }
