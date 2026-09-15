@@ -3,6 +3,8 @@
   "registration.email.label": "Email",
   "registration.username.label": "Придумайте логин",
   "registration.password.label": "Придумайте пароль",
+  "one.letter": "1 латинская буква",
+  "one.number": "1 цифра",
   "registration.robbo.company.label": "Название компании",
   "registration.robbo.company.required_error": "Укажите название компании",
   "registration.robbo.company.invalid_error": "Некорректная название компании",
