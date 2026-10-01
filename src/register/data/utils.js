@@ -247,7 +247,7 @@ export const isFormValid = (
   const visibleFieldDescriptions = omitRobboHiddenRegistrationFields(fieldDescriptions);
 
   Object.keys(visibleFieldDescriptions).forEach(key => {
-    if (key === 'phone_number') {
+    if (key === 'phone_number' || visibleFieldDescriptions[key]?.required === false) {
       return;
     }
     if (key === 'country' && !configurableFormFields?.country?.displayValue) {

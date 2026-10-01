@@ -174,7 +174,7 @@ const ConfigurableRegistrationForm = (props) => {
           );
           break;
         case 'marketingEmailsOptIn': {
-          const marketingRequired = Boolean(visibleFieldDescriptions?.marketingEmailsOptIn);
+          const marketingRequired = Boolean(visibleFieldDescriptions?.marketingEmailsOptIn?.required);
           formFieldDescriptions.push(
             <span key={fieldData.name}>
               <FormFieldRenderer

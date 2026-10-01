@@ -29,20 +29,24 @@ export function omitRobboHiddenRegistrationFields(fields) {
  * @param {Object|null|undefined} apiFields  fieldDescriptions from Redux (mfe_context.fields)
  * @param {function} formatMessage         react-intl formatMessage
  * @param {Object} [options]
- * @param {boolean} [options.requireMarketingOptIn]  если true — чекбокс рассылок обязателен (как на гостевом лендинге)
+ * @param {boolean} [options.showMarketingOptIn]  показать чекбокс рассылок первым блоком чекбоксов
+ * @param {boolean} [options.requireMarketingOptIn]  если true — чекбокс рассылок обязателен
  * @returns {Object}
  */
 export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage, options = {}) {
-  const { requireMarketingOptIn = false } = options;
+  const { showMarketingOptIn = false, requireMarketingOptIn = false } = options;
   const d = omitRobboHiddenRegistrationFields(
     apiFields && typeof apiFields === 'object' ? apiFields : {},
   );
 
-  if (requireMarketingOptIn) {
+  if (showMarketingOptIn || requireMarketingOptIn) {
     d.marketingEmailsOptIn = {
       name: 'marketingEmailsOptIn',
       type: 'checkbox',
-      error_message: formatMessage(messages['registration.robbo.marketing.required_error']),
+      required: requireMarketingOptIn,
+      ...(requireMarketingOptIn && {
+        error_message: formatMessage(messages['registration.robbo.marketing.required_error']),
+      }),
     };
   }
 
