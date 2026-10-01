@@ -244,7 +244,7 @@ export const isFormValid = (
   }
 
   Object.keys(fieldDescriptions).forEach(key => {
-    if (key === 'phone_number' || key === 'date_of_birth') {
+    if (key === 'phone_number' || key === 'date_of_birth' || fieldDescriptions[key]?.required === false) {
       return;
     }
     if (key === 'country' && !configurableFormFields?.country?.displayValue) {

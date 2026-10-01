@@ -169,7 +169,7 @@ const ConfigurableRegistrationForm = (props) => {
           );
           break;
         case 'marketingEmailsOptIn': {
-          const marketingRequired = Boolean(fieldDescriptions?.marketingEmailsOptIn);
+          const marketingRequired = Boolean(fieldDescriptions?.marketingEmailsOptIn?.required);
           formFieldDescriptions.push(
             <span key={fieldData.name}>
               <FormFieldRenderer
