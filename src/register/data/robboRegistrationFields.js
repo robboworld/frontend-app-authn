@@ -1,7 +1,10 @@
 import messages from '../messages';
 
-/** Registration fields removed from Authn UI (LMS may still list them in stale site config). */
-export const ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES = ['company'];
+/**
+ * Registration fields removed from Authn UI (LMS may still list them in stale site config).
+ * courses: no date of birth at registration.
+ */
+export const ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES = ['company', 'date_of_birth'];
 
 /**
  * @param {Object|null|undefined} fields
@@ -69,23 +72,6 @@ export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage
     d.phone_number = {
       ...d.phone_number,
       invalid_error_message: formatMessage(messages['registration.robbo.phone.invalid_error']),
-    };
-  }
-
-  if (!d.date_of_birth) {
-    d.date_of_birth = {
-      name: 'date_of_birth',
-      type: 'text',
-      label: formatMessage(messages['registration.robbo.dob.label']),
-      error_message: formatMessage(messages['registration.robbo.dob.required_error']),
-      required: true,
-    };
-  } else {
-    d.date_of_birth = {
-      ...d.date_of_birth,
-      label: d.date_of_birth.label || formatMessage(messages['registration.robbo.dob.label']),
-      error_message: d.date_of_birth.error_message
-        || formatMessage(messages['registration.robbo.dob.required_error']),
     };
   }
 
