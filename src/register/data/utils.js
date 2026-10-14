@@ -5,6 +5,14 @@ import messages from '../messages';
 import validateEmail from '../RegistrationFields/EmailField/validator';
 import validateName from '../RegistrationFields/NameField/validator';
 import validateUsername from '../RegistrationFields/UsernameField/validator';
+import {
+  isValidRobboPhoneNumber,
+  normalizeRobboPhoneNumber,
+  sanitizePhoneInput,
+} from './phoneValidation';
+import { omitRobboHiddenRegistrationFields } from './robboRegistrationFields';
+
+export { normalizeRobboPhoneNumber, sanitizePhoneInput };
 
 /**
  * It validates the password field value
@@ -29,13 +37,15 @@ export const COMPANY_INVALID_SERVER_MESSAGES = new Set([
   'Incorrect company entry',
 ]);
 
+export const PHONE_INVALID_SERVER_MESSAGES = new Set([
+  'Enter a valid phone number.',
+  'Enter a valid phone number',
+  "Phone number must start with '+' (optional) followed by digits (0-9) only.",
+]);
+
 export const NAME_THREE_WORDS_SERVER_MESSAGES = new Set([
   'Full name must contain three words separated by spaces.',
   'Full name must contain three words separated by spaces',
-]);
-
-export const USERNAME_TAKEN_SERVER_MESSAGES = new Set([
-  'It looks like this username is already taken',
 ]);
 
 /**
@@ -52,16 +62,9 @@ export const normalizeNameServerErrorMessage = (message, threeWordsErrorMessage)
   return message;
 };
 
-export const normalizeCompanyServerErrorMessage = (message, invalidErrorMessage) => {
-  if (!message) {
-    return message;
-  }
-  const trimmed = String(message).trim();
-  if (COMPANY_INVALID_SERVER_MESSAGES.has(trimmed)) {
-    return invalidErrorMessage;
-  }
-  return message;
-};
+export const USERNAME_TAKEN_SERVER_MESSAGES = new Set([
+  'It looks like this username is already taken',
+]);
 
 export const normalizeUsernameServerErrorMessage = (message, takenErrorMessage) => {
   if (!message) {
@@ -74,13 +77,112 @@ export const normalizeUsernameServerErrorMessage = (message, takenErrorMessage) 
   return message;
 };
 
-export const validateCompanyField = (value, requiredErrorMessage, invalidErrorMessage, required = true) => {
+export const normalizeCompanyServerErrorMessage = (message, invalidErrorMessage) => {
+  if (!message) {
+    return message;
+  }
+  const trimmed = String(message).trim();
+  if (COMPANY_INVALID_SERVER_MESSAGES.has(trimmed)) {
+    return invalidErrorMessage;
+  }
+  return message;
+};
+
+export const normalizePhoneServerErrorMessage = (message, invalidErrorMessage) => {
+  if (!message) {
+    return message;
+  }
+  const trimmed = String(message).trim();
+  if (PHONE_INVALID_SERVER_MESSAGES.has(trimmed)) {
+    return invalidErrorMessage;
+  }
+  return message;
+};
+
+export const validateCompanyField = (value, requiredErrorMessage, invalidErrorMessage) => {
   const trimmed = String(value ?? '').trim();
   if (!trimmed) {
-    return required && requiredErrorMessage ? requiredErrorMessage : '';
+    return requiredErrorMessage;
   }
   if (LETTER_REGEX.test(trimmed)) {
     return invalidErrorMessage;
+  }
+  return '';
+};
+
+export const validatePhoneField = (value, invalidErrorMessage) => {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) {
+    return '';
+  }
+  if (!isValidRobboPhoneNumber(trimmed)) {
+    return invalidErrorMessage;
+  }
+  return '';
+};
+
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Full years of age from ISO date of birth (YYYY-MM-DD) to today.
+ * @param {string} isoDate
+ * @returns {number|null}
+ */
+export const getAgeFromDateOfBirth = (isoDate) => {
+  const trimmed = String(isoDate ?? '').trim();
+  if (!ISO_DATE_RE.test(trimmed)) {
+    return null;
+  }
+  const [year, month, day] = trimmed.split('-').map(Number);
+  const dob = new Date(year, month - 1, day);
+  if (
+    Number.isNaN(dob.getTime())
+    || dob.getFullYear() !== year
+    || dob.getMonth() !== month - 1
+    || dob.getDate() !== day
+  ) {
+    return null;
+  }
+  const today = new Date();
+  let age = today.getFullYear() - year;
+  const monthDiff = today.getMonth() - (month - 1);
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < day)) {
+    age -= 1;
+  }
+  return age;
+};
+
+/**
+ * Validate required date of birth (ISO YYYY-MM-DD).
+ * @param {string} value
+ * @param {function} formatMessage
+ * @returns {string} error message or empty string
+ */
+export const validateDateOfBirthField = (value, formatMessage) => {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) {
+    return formatMessage(messages['registration.robbo.dob.required_error']);
+  }
+  if (!ISO_DATE_RE.test(trimmed)) {
+    return formatMessage(messages['registration.robbo.dob.invalid_error']);
+  }
+  const [year, month, day] = trimmed.split('-').map(Number);
+  const dob = new Date(year, month - 1, day);
+  if (
+    Number.isNaN(dob.getTime())
+    || dob.getFullYear() !== year
+    || dob.getMonth() !== month - 1
+    || dob.getDate() !== day
+  ) {
+    return formatMessage(messages['registration.robbo.dob.invalid_error']);
+  }
+  if (year < 1900) {
+    return formatMessage(messages['registration.robbo.dob.invalid_error']);
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (dob > today) {
+    return formatMessage(messages['registration.robbo.dob.future_error']);
   }
   return '';
 };
@@ -157,28 +259,28 @@ export const isFormValid = (
     isValid = false;
   }
 
-  Object.keys(fieldDescriptions).forEach(key => {
+  const visibleFieldDescriptions = omitRobboHiddenRegistrationFields(fieldDescriptions);
+
+  Object.keys(visibleFieldDescriptions).forEach(key => {
+    if (key === 'phone_number') {
+      return;
+    }
     if (key === 'country' && !configurableFormFields?.country?.displayValue) {
       fieldErrors[key] = formatMessage(messages['empty.country.field.error']);
     } else if (!configurableFormFields[key]) {
-      fieldErrors[key] = fieldDescriptions[key].error_message;
+      fieldErrors[key] = visibleFieldDescriptions[key].error_message;
     }
     if (fieldErrors[key]) { isValid = false; }
   });
 
-  if (fieldDescriptions.company) {
-    const companyValue = configurableFormFields.company ?? payload.company ?? '';
-    const companyRequired = Boolean(fieldDescriptions.company.error_message);
-    const invalidCompanyMessage = fieldDescriptions.company.invalid_error_message
-      || formatMessage(messages['registration.robbo.company.invalid_error']);
-    const companyError = validateCompanyField(
-      companyValue,
-      fieldDescriptions.company.error_message,
-      invalidCompanyMessage,
-      companyRequired,
-    );
-    if (companyError) {
-      fieldErrors.company = companyError;
+  if (visibleFieldDescriptions.phone_number) {
+    const rawPhone = configurableFormFields.phone_number ?? payload.phone_number ?? '';
+    const phoneValue = rawPhone ? normalizeRobboPhoneNumber(rawPhone) : '';
+    const invalidPhoneMessage = visibleFieldDescriptions.phone_number.invalid_error_message
+      || formatMessage(messages['registration.robbo.phone.invalid_error']);
+    const phoneError = validatePhoneField(phoneValue, invalidPhoneMessage);
+    if (phoneError) {
+      fieldErrors.phone_number = phoneError;
       isValid = false;
     }
   }
@@ -206,6 +308,9 @@ export const prepareRegistrationPayload = (
   Object.keys(configurableFormFields).forEach((fieldName) => {
     if (fieldName === 'country') {
       payload[fieldName] = configurableFormFields[fieldName].countryCode;
+    } else if (fieldName === 'phone_number') {
+      const raw = configurableFormFields[fieldName];
+      payload[fieldName] = raw ? normalizeRobboPhoneNumber(raw) : raw;
     } else {
       payload[fieldName] = configurableFormFields[fieldName];
     }
@@ -215,6 +320,8 @@ export const prepareRegistrationPayload = (
   if (!showMarketingEmailOptInCheckbox) {
     delete payload.marketingEmailsOptIn;
   }
+
+  delete payload.company;
 
   payload.totalRegistrationTime = totalRegistrationTime;
   payload = snakeCaseObject(payload);

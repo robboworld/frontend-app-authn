@@ -267,12 +267,14 @@
 @media (min-width: 1200px) {
 
   /*
-   * Right panel: full height, full width from vertical center to viewport right (flex remainder).
-   * Rounding only top-left + bottom-right (Tutor-style split card).
+   * Split row: at least viewport height; grows when the form is taller (e.g. validation errors).
+   * `overflow: hidden` clips glow pseudos (`::before`/`::after` use negative offsets); card height
+   * still tracks content via `min-height` + `.content { flex: 1 1 auto }`, not a fixed `height`.
    */
   .robbo-auth-standalone-shell #main .layout {
-    height: 100vh;
-    max-height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: none;
     overflow: hidden;
     align-items: stretch;
     justify-content: flex-start;
@@ -293,7 +295,7 @@
   }
 
   .robbo-auth-standalone-shell .content {
-    flex: 1 1 0;
+    flex: 1 1 auto;
     /* floor tracks viewport; cap keeps wide layouts legible */
     min-width: clamp(18rem, 40vw, #{$authn-content-column-width});
     width: auto;
@@ -302,8 +304,7 @@
     margin-right: clamp(0.875rem, 2.75vw, var(--authn-content-margin-right));
     margin-bottom: var(--authn-content-panel-block-margin);
     margin-left: var(--authn-content-margin-left);
-    min-height: 0;
-    flex-grow: 1;
+    min-height: auto;
     align-self: stretch;
     border-top-left-radius: 28px;
     border-top-right-radius: 0;
@@ -336,7 +337,7 @@
 
 /*
  * Standalone below xl (<1200): hero + card stack, centered like bundled Tutor narrow layout.
- * (Above xl the split row uses fixed viewport height + overflow hidden — see min-width block.)
+ * (Above xl the split row is at least viewport height and grows with tall forms — see min-width block.)
  */
 @media (max-width: 1199.98px) {
   .robbo-auth-standalone-shell #main .layout {

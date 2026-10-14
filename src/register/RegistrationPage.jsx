@@ -12,7 +12,6 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import Skeleton from 'react-loading-skeleton';
 
-import { FormFieldRenderer } from '../field-renderer';
 import ConfigurableRegistrationForm from './components/ConfigurableRegistrationForm';
 import RegistrationFailure from './components/RegistrationFailure';
 import {
@@ -27,17 +26,23 @@ import {
   TPA_AUTHENTICATION_FAILURE,
 } from './data/constants';
 import getBackendValidations from './data/selectors';
-import { mergeRobboRegistrationFieldDescriptions } from './data/robboRegistrationFields';
+import {
+  mergeRobboRegistrationFieldDescriptions,
+  omitRobboHiddenRegistrationFields,
+} from './data/robboRegistrationFields';
 import {
   isFormValid,
-  normalizeCompanyServerErrorMessage,
   normalizeNameServerErrorMessage,
   normalizeUsernameServerErrorMessage,
+  normalizePhoneServerErrorMessage,
   prepareRegistrationPayload,
-  validateCompanyField,
+  normalizeRobboPhoneNumber,
+  validatePhoneField,
 } from './data/utils';
 import messages from './messages';
-import { EmailField, NameField, UsernameField } from './RegistrationFields';
+import {
+  EmailField, NameField, PhoneField, UsernameField,
+} from './RegistrationFields';
 import {
   InstitutionLogistration,
   PasswordField,
@@ -103,25 +108,27 @@ const RegistrationPage = (props) => {
   const queryParams = useMemo(() => getAllPossibleQueryParams(), []);
   const tpaHint = useMemo(() => getTpaHint(), []);
 
-  const fieldDescriptionsWithoutCompany = useMemo(() => {
-    if (!registrationFieldDescriptions?.company) {
+  const fieldDescriptionsWithoutRobboCustomFields = useMemo(() => {
+    if (!registrationFieldDescriptions) {
       return registrationFieldDescriptions;
     }
-    const { company, ...rest } = registrationFieldDescriptions;
+    const rest = omitRobboHiddenRegistrationFields(registrationFieldDescriptions);
+    delete rest.phone_number;
+    delete rest.date_of_birth;
     return rest;
   }, [registrationFieldDescriptions]);
 
-  const companyFieldData = useMemo(() => {
-    if (!registrationFieldDescriptions?.company) {
+  const phoneFieldData = useMemo(() => {
+    if (!registrationFieldDescriptions?.phone_number) {
       return null;
     }
     return {
-      ...registrationFieldDescriptions.company,
-      label: formatMessage(messages['registration.robbo.company.label']),
+      ...registrationFieldDescriptions.phone_number,
+      type: 'tel',
+      label: formatMessage(messages['registration.robbo.phone.label']),
+      helpText: formatMessage(messages['registration.robbo.phone.help']),
     };
   }, [registrationFieldDescriptions, formatMessage]);
-
-  const companyFieldRequired = Boolean(companyFieldData?.error_message);
 
   const [formFields, setFormFields] = useState({ ...backedUpFormData.formFields });
   const [configurableFormFields, setConfigurableFormFields] = useState({ ...backedUpFormData.configurableFormFields });
@@ -131,6 +138,8 @@ const RegistrationPage = (props) => {
   const registrationInFlight = useRef(false);
   // temporary error state for embedded experience because we don't want to show errors on blur
   const [temporaryErrors, setTemporaryErrors] = useState({ ...backedUpFormData.errors });
+
+  const emailFloatingLabel = formatMessage(messages['registration.email.label']);
 
   const { cta, host } = queryParams;
   const buttonLabel = cta
@@ -193,7 +202,7 @@ const RegistrationPage = (props) => {
 
   useEffect(() => {
     if (backendValidations) {
-      const companyInvalidLabel = formatMessage(messages['registration.robbo.company.invalid_error']);
+      const phoneInvalidLabel = formatMessage(messages['registration.robbo.phone.invalid_error']);
       const nameThreeWordsLabel = formatMessage(messages['registration.robbo.name.three_words_error']);
       const usernameTakenLabel = formatMessage(messages['registration.robbo.username.taken_error']);
       const localizedValidations = { ...backendValidations };
@@ -209,10 +218,10 @@ const RegistrationPage = (props) => {
           usernameTakenLabel,
         );
       }
-      if (localizedValidations.company) {
-        localizedValidations.company = normalizeCompanyServerErrorMessage(
-          localizedValidations.company,
-          companyInvalidLabel,
+      if (localizedValidations.phone_number) {
+        localizedValidations.phone_number = normalizePhoneServerErrorMessage(
+          localizedValidations.phone_number,
+          phoneInvalidLabel,
         );
       }
       if (registrationEmbedded) {
@@ -259,11 +268,9 @@ const RegistrationPage = (props) => {
     setFormFields(prevState => ({ ...prevState, [name]: value }));
   };
 
-  const handleCompanyFieldChange = (event) => {
+  const handlePhoneFieldChange = (name, value) => {
     dismissRegistrationFailureBanner();
-    const { name, value } = event.target;
-    const sanitized = value.replace(/[a-zA-Z]/g, '');
-    setConfigurableFormFields((prev) => ({ ...prev, [name]: sanitized }));
+    setConfigurableFormFields((prev) => ({ ...prev, [name]: value }));
     if (registrationError[name]) {
       dispatch(clearRegistrationBackendError(name));
     }
@@ -274,16 +281,19 @@ const RegistrationPage = (props) => {
     }
   };
 
-  const handleCompanyFieldBlur = (event) => {
-    const { name, value } = event.target;
+  const handlePhoneFieldBlur = (name, value) => {
+    const normalized = normalizeRobboPhoneNumber(value);
+    if (normalized !== value) {
+      setConfigurableFormFields((prev) => ({ ...prev, [name]: normalized }));
+    }
     const fieldMeta = registrationFieldDescriptions[name];
-    const error = validateCompanyField(
-      value,
-      fieldMeta?.error_message || '',
-      fieldMeta?.invalid_error_message
-        || formatMessage(messages['registration.robbo.company.invalid_error']),
-      Boolean(fieldMeta?.error_message),
-    );
+    const error = fieldMeta
+      ? validatePhoneField(
+        normalized,
+        fieldMeta.invalid_error_message
+          || formatMessage(messages['registration.robbo.phone.invalid_error']),
+      )
+      : '';
     if (registrationEmbedded) {
       setTemporaryErrors((prev) => ({ ...prev, [name]: error }));
     } else {
@@ -291,9 +301,8 @@ const RegistrationPage = (props) => {
     }
   };
 
-  const handleCompanyFieldFocus = (event) => {
+  const handlePhoneFieldFocus = (name) => {
     dismissRegistrationFailureBanner();
-    const { name } = event.target;
     if (registrationEmbedded) {
       setTemporaryErrors((prev) => ({ ...prev, [name]: '' }));
     } else {
@@ -446,17 +455,18 @@ const RegistrationPage = (props) => {
                 handleChange={handleOnChange}
                 errorMessage={errors.email}
                 helpText={[formatMessage(messages['help.text.email'])]}
-                floatingLabel={formatMessage(messages['registration.email.label'])}
+                floatingLabel={emailFloatingLabel}
               />
-              {companyFieldData && (
-                <FormFieldRenderer
-                  fieldData={companyFieldData}
-                  value={configurableFormFields.company ?? ''}
-                  onChangeHandler={handleCompanyFieldChange}
-                  handleBlur={handleCompanyFieldBlur}
-                  handleFocus={handleCompanyFieldFocus}
-                  errorMessage={registrationEmbedded ? temporaryErrors.company : errors.company}
-                  isRequired={companyFieldRequired}
+              {phoneFieldData && (
+                <PhoneField
+                  name="phone_number"
+                  label={phoneFieldData.label}
+                  helpText={phoneFieldData.helpText}
+                  value={configurableFormFields.phone_number ?? ''}
+                  onChange={handlePhoneFieldChange}
+                  onBlur={handlePhoneFieldBlur}
+                  onFocus={handlePhoneFieldFocus}
+                  errorMessage={registrationEmbedded ? temporaryErrors.phone_number : errors.phone_number}
                 />
               )}
               {!flags.autoGeneratedUsernameEnabled && (
@@ -488,7 +498,7 @@ const RegistrationPage = (props) => {
                 setFieldErrors={registrationEmbedded ? setTemporaryErrors : setErrors}
                 setFormFields={setConfigurableFormFields}
                 autoSubmitRegisterForm={autoSubmitRegForm}
-                fieldDescriptions={fieldDescriptionsWithoutCompany}
+                fieldDescriptions={fieldDescriptionsWithoutRobboCustomFields}
                 onDismissRegistrationFailure={dismissRegistrationFailureBanner}
               />
               <StatefulButton

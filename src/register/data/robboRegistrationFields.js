@@ -1,12 +1,30 @@
 import messages from '../messages';
 
+/** Registration fields removed from Authn UI (LMS may still list them in stale site config). */
+export const ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES = ['company', 'date_of_birth', 'year_of_birth'];
+
 /**
- * Ensures honor + company exist in the field map used for Authn registration.
- * The marketing checkbox is driven only by MFE config; honor/company normally
- * come from GET /api/mfe_context → registrationFields.fields. If the LMS process
- * does not expose dynamic fields (stale settings, wrong worker, etc.), the API
- * can omit them and the UI would only show marketing. This merge restores the
- * second checkbox and the company field to match guest landing + backend.
+ * @param {Object|null|undefined} fields
+ * @returns {Object}
+ */
+export function omitRobboHiddenRegistrationFields(fields) {
+  if (!fields || typeof fields !== 'object') {
+    return fields;
+  }
+  const next = { ...fields };
+  ROBBO_HIDDEN_REGISTRATION_FIELD_NAMES.forEach((name) => {
+    delete next[name];
+  });
+  return next;
+}
+
+/**
+ * Ensures honor (+ optional phone) exist in the field map used for Authn registration.
+ * The marketing checkbox is driven only by MFE config; honor normally comes from
+ * GET /api/mfe_context → registrationFields.fields. If the LMS process does not
+ * expose dynamic fields (stale settings, wrong worker, etc.), the API can omit
+ * them and the UI would only show marketing. This merge restores the checkbox
+ * blocks to match guest landing + backend.
  *
  * @param {Object|null|undefined} apiFields  fieldDescriptions from Redux (mfe_context.fields)
  * @param {function} formatMessage         react-intl formatMessage
@@ -16,7 +34,9 @@ import messages from '../messages';
  */
 export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage, options = {}) {
   const { requireMarketingOptIn = false } = options;
-  const d = { ...(apiFields && typeof apiFields === 'object' ? apiFields : {}) };
+  const d = omitRobboHiddenRegistrationFields(
+    apiFields && typeof apiFields === 'object' ? apiFields : {},
+  );
 
   if (requireMarketingOptIn) {
     d.marketingEmailsOptIn = {
@@ -34,20 +54,19 @@ export function mergeRobboRegistrationFieldDescriptions(apiFields, formatMessage
     };
   }
 
-  if (!d.company) {
-    d.company = {
-      name: 'company',
-      type: 'text',
-      label: formatMessage(messages['registration.robbo.company.label']),
-      error_message: formatMessage(messages['registration.robbo.company.required_error']),
-      invalid_error_message: formatMessage(messages['registration.robbo.company.invalid_error']),
+  if (!d.phone_number) {
+    d.phone_number = {
+      name: 'phone_number',
+      type: 'tel',
+      label: formatMessage(messages['registration.robbo.phone.label']),
+      invalid_error_message: formatMessage(messages['registration.robbo.phone.invalid_error']),
     };
-  } else if (!d.company.invalid_error_message) {
-    d.company = {
-      ...d.company,
-      invalid_error_message: formatMessage(messages['registration.robbo.company.invalid_error']),
+  } else if (!d.phone_number.invalid_error_message) {
+    d.phone_number = {
+      ...d.phone_number,
+      invalid_error_message: formatMessage(messages['registration.robbo.phone.invalid_error']),
     };
   }
 
-  return d;
+  return omitRobboHiddenRegistrationFields(d);
 }

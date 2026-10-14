@@ -77,6 +77,51 @@ const messages = defineMessages({
     defaultMessage: 'Incorrect company entry',
     description: 'Validation when company contains Latin letters (Robbo)',
   },
+  'registration.robbo.phone.label': {
+    id: 'registration.robbo.phone.label',
+    defaultMessage: 'Phone number',
+    description: 'Optional phone field label on registration (Robbo)',
+  },
+  'registration.robbo.phone.invalid_error': {
+    id: 'registration.robbo.phone.invalid_error',
+    defaultMessage: 'Enter a valid phone number for the selected country',
+    description: 'Validation when phone format is invalid (Robbo)',
+  },
+  'registration.robbo.phone.help': {
+    id: 'registration.robbo.phone.help',
+    defaultMessage: 'Select your country code, then enter your phone number.',
+    description: 'Help text for optional phone field on registration (Robbo)',
+  },
+  'registration.robbo.phone.country.aria': {
+    id: 'registration.robbo.phone.country.aria',
+    defaultMessage: 'Country code',
+    description: 'Accessible label for phone country code selector (Robbo)',
+  },
+  'registration.robbo.dob.label': {
+    id: 'registration.robbo.dob.label',
+    defaultMessage: 'Date of birth',
+    description: 'Required date of birth field label on registration (Robbo; RU: Дата рождения)',
+  },
+  'registration.robbo.dob.required_error': {
+    id: 'registration.robbo.dob.required_error',
+    defaultMessage: 'Enter your date of birth',
+    description: 'Validation when date of birth is empty (Robbo)',
+  },
+  'registration.robbo.dob.invalid_error': {
+    id: 'registration.robbo.dob.invalid_error',
+    defaultMessage: 'Enter a valid date of birth',
+    description: 'Validation when date of birth format is invalid or year is before 1900 (Robbo)',
+  },
+  'registration.robbo.dob.future_error': {
+    id: 'registration.robbo.dob.future_error',
+    defaultMessage: 'Date of birth cannot be in the future',
+    description: 'Validation when date of birth is in the future (Robbo)',
+  },
+  'registration.robbo.email.parent_label': {
+    id: 'registration.robbo.email.parent_label',
+    defaultMessage: "Parent's email",
+    description: 'Email field label when registrant is under 18 (Robbo; RU: Email родителя)',
+  },
   'registration.robbo.username.taken_error': {
     id: 'registration.robbo.username.taken_error',
     defaultMessage: 'It looks like this username is already taken',
