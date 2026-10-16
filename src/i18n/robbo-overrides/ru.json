@@ -31,6 +31,7 @@
   "username.validation.message": "Логин: от 2 до 30 символов",
   "name.validation.message": "Введите корректное ФИО",
   "registration.robbo.name.three_words_error": "ФИО должно состоять из трёх слов, разделённых пробелом",
+  "forgot.password.email.help.text": "Email, указанный при регистрации аккаунта",
   "robbo.header.mainNav.myCourses": "Мои курсы",
   "robbo.header.mainNav.programs": "Программы",
   "robbo.header.mainNav.courseCatalog": "Каталог курсов",
