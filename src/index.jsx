@@ -6,12 +6,12 @@ import React, { StrictMode } from 'react';
 import {
   APP_INIT_ERROR, APP_READY, getConfig, initialize, mergeConfig, subscribe,
 } from '@edx/frontend-platform';
-import { ErrorPage } from '@edx/frontend-platform/react';
 import { createRoot } from 'react-dom/client';
 
 import configuration from './config';
 import messages from './i18n';
 import MainApp from './MainApp';
+import { initRobboErrors, RobboErrorPage, robboErrorsMiddleware } from './robbo-errors';
 
 const initYandexMetrika = () => {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
@@ -54,6 +54,9 @@ const initYandexMetrika = () => {
   });
 };
 
+// Robbo: human-readable errors with a code and number (src/robbo-errors).
+initRobboErrors({ app: 'authn' });
+
 subscribe(APP_READY, () => {
   initYandexMetrika();
   const root = createRoot(document.getElementById('root'));
@@ -65,17 +68,19 @@ subscribe(APP_READY, () => {
   );
 });
 
-subscribe(APP_INIT_ERROR, (error) => {
+// PubSub calls back with (topic, data): the error is the second argument.
+subscribe(APP_INIT_ERROR, (message, error) => {
   const root = createRoot(document.getElementById('root'));
 
   root.render(
     <StrictMode>
-      <ErrorPage message={error.message} />
+      <RobboErrorPage error={error} startup />
     </StrictMode>,
   );
 });
 
 initialize({
+  authMiddleware: [robboErrorsMiddleware],
   handlers: {
     config: () => {
       mergeConfig(configuration);

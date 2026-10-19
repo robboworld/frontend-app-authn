@@ -37,6 +37,7 @@ import { ProgressiveProfiling } from './progressive-profiling';
 import { RecommendationsPage } from './recommendations';
 import { RegistrationPage } from './register';
 import { ResetPasswordPage } from './reset-password';
+import { RobboErrorBoundary } from './robbo-errors';
 
 import './index.scss';
 
@@ -80,11 +81,13 @@ const MainAppRoutes = () => {
 
 const MainApp = () => (
   <AppProvider store={configureStore()}>
-    <Helmet>
-      <link rel="shortcut icon" href={getConfig().FAVICON_URL} type="image/x-icon" />
-    </Helmet>
-    {getConfig().ZENDESK_KEY && <Zendesk />}
-    <MainAppRoutes />
+    <RobboErrorBoundary>
+      <Helmet>
+        <link rel="shortcut icon" href={getConfig().FAVICON_URL} type="image/x-icon" />
+      </Helmet>
+      {getConfig().ZENDESK_KEY && <Zendesk />}
+      <MainAppRoutes />
+    </RobboErrorBoundary>
   </AppProvider>
 );
 
