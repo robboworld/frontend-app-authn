@@ -185,6 +185,28 @@ describe('ResetPasswordPage', () => {
     expect(internalServerError).toBe(validationMessage);
   });
 
+  // Robbo: the failure's text with the code and number (src/robbo-errors) instead of the general sentence.
+  it('should show the failure text and code on reset password server error', () => {
+    store = mockStore({
+      ...initialState,
+      resetPassword: {
+        status: PASSWORD_RESET.INTERNAL_SERVER_ERROR,
+        robboError: {
+          code: 'SRV-ERROR',
+          shortId: '7F3A-29C1',
+          title: "Couldn't complete the action",
+          message: 'This is an error on our side, and we have logged it. Please try again later.',
+          audience: 'learner',
+        },
+      },
+    });
+
+    const { container } = render(reduxWrapper(<IntlResetPasswordPage {...props} />));
+    const alert = container.querySelectorAll('.alert-danger')[0];
+    expect(alert.textContent).toContain('This is an error on our side, and we have logged it.');
+    expect(alert.textContent).toContain('SRV-ERROR · 7F3A-29C1');
+  });
+
   // ******** miscellaneous tests ********
 
   it('should call validation on password field when blur event fires', () => {

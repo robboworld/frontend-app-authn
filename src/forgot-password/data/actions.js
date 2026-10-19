@@ -22,8 +22,10 @@ export const forgotPasswordForbidden = () => ({
   type: FORGOT_PASSWORD.FORBIDDEN,
 });
 
-export const forgotPasswordServerError = () => ({
+// Robbo: robboError — the failure's text, code and number (src/robbo-errors), for ForgotPasswordAlert.
+export const forgotPasswordServerError = (robboError = null) => ({
   type: FORGOT_PASSWORD.FAILURE,
+  payload: { robboError },
 });
 
 export const setForgotPasswordFormData = (forgotPasswordFormData) => ({

@@ -72,7 +72,11 @@ describe('handleResetPassword', () => {
 
     expect(loggingService.logError).toHaveBeenCalled();
     expect(resetPassword).toHaveBeenCalledTimes(1);
-    expect(dispatched).toEqual([resetPasswordBegin(), resetPasswordFailure(PASSWORD_RESET.INTERNAL_SERVER_ERROR)]);
+    // Robbo: plus the failure's text, code and number (src/robbo-errors)
+    expect(dispatched).toEqual([
+      resetPasswordBegin(),
+      resetPasswordFailure(PASSWORD_RESET.INTERNAL_SERVER_ERROR, null, expect.objectContaining({ code: 'SRV-ERROR' })),
+    ]);
     resetPassword.mockClear();
   });
 
@@ -154,7 +158,11 @@ describe('handleValidateToken', () => {
     );
 
     expect(validateToken).toHaveBeenCalledTimes(1);
-    expect(dispatched).toEqual([validateTokenBegin(), passwordResetFailure(PASSWORD_RESET.INTERNAL_SERVER_ERROR)]);
+    // Robbo: plus the failure's text, code and number (src/robbo-errors)
+    expect(dispatched).toEqual([
+      validateTokenBegin(),
+      passwordResetFailure(PASSWORD_RESET.INTERNAL_SERVER_ERROR, expect.objectContaining({ code: 'SRV-ERROR' })),
+    ]);
     validateToken.mockClear();
   });
 

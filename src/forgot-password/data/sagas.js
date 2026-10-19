@@ -10,6 +10,7 @@ import {
   forgotPasswordSuccess,
 } from './actions';
 import { forgotPassword } from './service';
+import { describeError } from '../../robbo-errors';
 
 // Services
 export function* handleForgotPassword(action) {
@@ -24,7 +25,8 @@ export function* handleForgotPassword(action) {
       yield put(forgotPasswordForbidden());
       logInfo(e);
     } else {
-      yield put(forgotPasswordServerError());
+      // Robbo: the human text with the code and number (src/robbo-errors), also with no answer at all.
+      yield put(forgotPasswordServerError(describeError(e)));
       logError(e);
     }
   }

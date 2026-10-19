@@ -35,6 +35,7 @@ const reducer = (state = defaultState, action = null) => {
         ...state,
         status: action.payload.errorCode,
         errorMsg: action.payload.errorMsg,
+        robboError: action.payload.robboError,
       };
     default:
       return state;

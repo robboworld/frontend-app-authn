@@ -155,7 +155,7 @@ const ResetPasswordPage = (props) => {
           </Tabs>
           <div id="main-content" className="main-content">
             <div className="mw-xs">
-              <ResetPasswordFailure errorCode={errorCode} errorMsg={props.errorMsg} />
+              <ResetPasswordFailure errorCode={errorCode} errorMsg={props.errorMsg} robboError={props.robboError} />
               <h4>{formatMessage(messages['reset.password'])}</h4>
               <p className="mb-4">{formatMessage(messages['reset.password.page.instructions'])}</p>
               <Form id="set-reset-password-form" name="set-reset-password-form">
@@ -205,6 +205,7 @@ ResetPasswordPage.defaultProps = {
   status: null,
   token: null,
   errorMsg: null,
+  robboError: null,
 };
 
 ResetPasswordPage.propTypes = {
@@ -213,6 +214,10 @@ ResetPasswordPage.propTypes = {
   token: PropTypes.string,
   status: PropTypes.string,
   errorMsg: PropTypes.string,
+  robboError: PropTypes.shape({
+    message: PropTypes.string,
+    code: PropTypes.string,
+  }),
 };
 
 export default connect(

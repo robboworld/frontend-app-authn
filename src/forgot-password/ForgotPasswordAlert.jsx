@@ -11,11 +11,13 @@ import {
   COMPLETE_STATE, FORBIDDEN_STATE, FORM_SUBMISSION_ERROR, INTERNAL_SERVER_ERROR,
 } from '../data/constants';
 import { PASSWORD_RESET } from '../reset-password/data/constants';
+import { RobboErrorDetails } from '../robbo-errors';
 
 const ForgotPasswordAlert = (props) => {
   const { formatMessage } = useIntl();
-  const { email, emailError } = props;
+  const { email, emailError, robboError } = props;
   let message = '';
+  let details = null;
   let heading = formatMessage(messages['forgot.password.error.alert.title']);
   let { status } = props;
 
@@ -70,6 +72,12 @@ const ForgotPasswordAlert = (props) => {
       break;
   }
 
+  // Robbo: what failed and the code with the number (src/robbo-errors) when the saga knows it.
+  if (robboError && (status === INTERNAL_SERVER_ERROR || status === PASSWORD_RESET.INTERNAL_SERVER_ERROR)) {
+    message = robboError.message;
+    details = <RobboErrorDetails info={robboError} />;
+  }
+
   if (message) {
     return (
       <Alert
@@ -80,6 +88,7 @@ const ForgotPasswordAlert = (props) => {
       >
         <Alert.Heading>{heading}</Alert.Heading>
         <p>{message}</p>
+        {details}
       </Alert>
     );
   }
@@ -89,12 +98,17 @@ const ForgotPasswordAlert = (props) => {
 ForgotPasswordAlert.defaultProps = {
   email: '',
   emailError: '',
+  robboError: null,
 };
 
 ForgotPasswordAlert.propTypes = {
   status: PropTypes.string.isRequired,
   email: PropTypes.string,
   emailError: PropTypes.string,
+  robboError: PropTypes.shape({
+    message: PropTypes.string,
+    code: PropTypes.string,
+  }),
 };
 
 export default ForgotPasswordAlert;

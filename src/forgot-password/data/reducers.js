@@ -32,10 +32,12 @@ const reducer = (state = defaultState, action = null) => {
         return {
           email: state.email,
           status: INTERNAL_SERVER_ERROR,
+          robboError: action.payload?.robboError,
         };
       case PASSWORD_RESET_FAILURE:
         return {
           status: action.payload.errorCode,
+          robboError: action.payload.robboError,
         };
       case FORGOT_PASSWORD_PERSIST_FORM_DATA: {
         const { forgotPasswordFormData } = action.payload;
