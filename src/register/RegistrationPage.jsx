@@ -450,7 +450,11 @@ const RegistrationPage = (props) => {
             <RegistrationFailure
               errorCode={errorCode.type}
               failureCount={errorCode.count}
-              context={{ provider: currentProvider, errorMessage: thirdPartyAuthErrorMessage }}
+              context={{
+                provider: currentProvider,
+                errorMessage: thirdPartyAuthErrorMessage,
+                robboError: registrationError?.robboError,
+              }}
             />
             <Form id="registration-form" name="registration-form" onSubmit={handleSubmit}>
               <NameField

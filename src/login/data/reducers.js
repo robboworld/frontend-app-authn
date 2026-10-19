@@ -57,7 +57,10 @@ const reducer = (state = defaultState, action = {}) => {
       return {
         ...state,
         loginErrorCode: loginError.errorCode,
-        loginErrorContext: { ...loginError.context, email, redirectUrl },
+        // Robbo: robboError — the failure's text, code and number (src/robbo-errors), for LoginFailure.
+        loginErrorContext: {
+          ...loginError.context, email, redirectUrl, robboError: loginError.robboError,
+        },
         submitState: DEFAULT_STATE,
       };
     }
