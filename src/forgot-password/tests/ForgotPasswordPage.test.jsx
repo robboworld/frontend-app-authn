@@ -122,6 +122,29 @@ describe('ForgotPasswordPage', () => {
     expect(validationErrors).toBe(expectedMessage);
   });
 
+  // Robbo: the failure's text with the code and number (src/robbo-errors) instead of the general sentence.
+  it('should show the failure text and code on server error', () => {
+    store = mockStore({
+      forgotPassword: {
+        status: INTERNAL_SERVER_ERROR,
+        robboError: {
+          code: 'SRV-ERROR',
+          shortId: '7F3A-29C1',
+          title: "Couldn't complete the action",
+          message: 'This is an error on our side, and we have logged it. Please try again later.',
+          audience: 'learner',
+        },
+      },
+    });
+
+    const { container } = render(reduxWrapper(<IntlForgotPasswordPage {...props} />));
+
+    const alert = container.querySelectorAll('.alert-danger')[0];
+    expect(alert.textContent).toContain('This is an error on our side, and we have logged it.');
+    expect(alert.textContent).toContain('SRV-ERROR · 7F3A-29C1');
+    expect(alert.textContent).not.toContain('Try refreshing the page');
+  });
+
   it('should display empty email validation message', async () => {
     const validationMessage = 'We were unable to contact you.Enter your email below.';
     const { container } = render(reduxWrapper(<IntlForgotPasswordPage {...props} />));

@@ -30,7 +30,7 @@ const ForgotPasswordPage = (props) => {
   const platformName = getConfig().SITE_NAME;
   const emailRegex = new RegExp(VALID_EMAIL_REGEX, 'i');
   const {
-    status, submitState, emailValidationError,
+    status, submitState, emailValidationError, robboError,
   } = props;
 
   const { formatMessage } = useIntl();
@@ -107,7 +107,7 @@ const ForgotPasswordPage = (props) => {
         </Tabs>
         <div id="main-content" className="main-content">
           <Form id="forget-password-form" name="forget-password-form" className="mw-xs">
-            <ForgotPasswordAlert email={bannerEmail} emailError={formErrors} status={status} />
+            <ForgotPasswordAlert email={bannerEmail} emailError={formErrors} status={status} robboError={robboError} />
             <h2 className="h4">
               {formatMessage(messages['forgot.password.page.heading'])}
             </h2>
@@ -171,6 +171,10 @@ ForgotPasswordPage.propTypes = {
   setForgotPasswordFormData: PropTypes.func.isRequired,
   status: PropTypes.string,
   submitState: PropTypes.string,
+  robboError: PropTypes.shape({
+    message: PropTypes.string,
+    code: PropTypes.string,
+  }),
 };
 
 ForgotPasswordPage.defaultProps = {
@@ -178,6 +182,7 @@ ForgotPasswordPage.defaultProps = {
   emailValidationError: '',
   status: null,
   submitState: DEFAULT_STATE,
+  robboError: null,
 };
 
 export default connect(

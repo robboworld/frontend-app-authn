@@ -38,7 +38,30 @@ describe('handleForgotPassword', () => {
     expect(loggingService.logError).toHaveBeenCalled();
     expect(dispatched).toEqual([
       actions.forgotPasswordBegin(),
-      actions.forgotPasswordServerError(),
+      // Robbo: plus the failure's text, code and number (src/robbo-errors)
+      actions.forgotPasswordServerError(expect.objectContaining({ code: 'SRV-ERROR' })),
+    ]);
+    forgotPasswordRequest.mockClear();
+  });
+
+  // Robbo: no answer at all (no connection, the site restarting) gets its own code.
+  it('should report a failure with no answer', async () => {
+    const networkError = { request: {}, isAxiosError: true, message: 'Network Error' };
+    const forgotPasswordRequest = jest.spyOn(api, 'forgotPassword').mockImplementation(
+      () => Promise.reject(networkError),
+    );
+
+    const dispatched = [];
+    await runSaga(
+      { dispatch: (action) => dispatched.push(action) },
+      handleForgotPassword,
+      params,
+    );
+
+    expect(loggingService.logError).toHaveBeenCalled();
+    expect(dispatched).toEqual([
+      actions.forgotPasswordBegin(),
+      actions.forgotPasswordServerError(expect.objectContaining({ code: 'NET-OFFLINE' })),
     ]);
     forgotPasswordRequest.mockClear();
   });

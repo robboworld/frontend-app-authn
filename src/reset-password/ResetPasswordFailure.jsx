@@ -7,12 +7,14 @@ import PropTypes from 'prop-types';
 
 import { FORM_SUBMISSION_ERROR, PASSWORD_RESET, PASSWORD_VALIDATION_ERROR } from './data/constants';
 import messages from './messages';
+import { RobboErrorDetails } from '../robbo-errors';
 
 const ResetPasswordFailure = (props) => {
   const { formatMessage } = useIntl();
-  const { errorCode, errorMsg } = props;
+  const { errorCode, errorMsg, robboError } = props;
 
   let errorMessage = null;
+  let details = null;
   let heading = formatMessage(messages['reset.password.failure.heading']);
   switch (errorCode) {
     case PASSWORD_RESET.FORBIDDEN_REQUEST:
@@ -20,7 +22,9 @@ const ResetPasswordFailure = (props) => {
       errorMessage = formatMessage(messages['rate.limit.error']);
       break;
     case PASSWORD_RESET.INTERNAL_SERVER_ERROR:
-      errorMessage = formatMessage(messages['internal.server.error']);
+      // Robbo: what failed and the code with the number (src/robbo-errors) when the saga knows it.
+      errorMessage = robboError ? robboError.message : formatMessage(messages['internal.server.error']);
+      details = robboError && <RobboErrorDetails info={robboError} />;
       break;
     case PASSWORD_VALIDATION_ERROR:
       errorMessage = errorMsg;
@@ -37,6 +41,7 @@ const ResetPasswordFailure = (props) => {
       <Alert id="validation-errors" className="mb-5" variant="danger" icon={Error}>
         <Alert.Heading>{heading}</Alert.Heading>
         <p>{errorMessage}</p>
+        {details}
       </Alert>
     );
   }
@@ -47,11 +52,16 @@ const ResetPasswordFailure = (props) => {
 ResetPasswordFailure.defaultProps = {
   errorCode: null,
   errorMsg: null,
+  robboError: null,
 };
 
 ResetPasswordFailure.propTypes = {
   errorCode: PropTypes.string,
   errorMsg: PropTypes.string,
+  robboError: PropTypes.shape({
+    message: PropTypes.string,
+    code: PropTypes.string,
+  }),
 };
 
 export default ResetPasswordFailure;

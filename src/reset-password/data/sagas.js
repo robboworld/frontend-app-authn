@@ -13,6 +13,7 @@ import {
 } from './actions';
 import { PASSWORD_RESET, PASSWORD_VALIDATION_ERROR } from './constants';
 import { resetPassword, validateToken } from './service';
+import { describeError } from '../../robbo-errors';
 
 // Services
 export function* handleValidateToken(action) {
@@ -30,7 +31,8 @@ export function* handleValidateToken(action) {
       yield put(passwordResetFailure(PASSWORD_RESET.FORBIDDEN_REQUEST));
       logInfo(err);
     } else {
-      yield put(passwordResetFailure(PASSWORD_RESET.INTERNAL_SERVER_ERROR));
+      // Robbo: the human text with the code and number (src/robbo-errors), also with no answer at all.
+      yield put(passwordResetFailure(PASSWORD_RESET.INTERNAL_SERVER_ERROR, describeError(err)));
       logError(err);
     }
   }
@@ -55,7 +57,8 @@ export function* handleResetPassword(action) {
       yield put(resetPasswordFailure(PASSWORD_RESET.FORBIDDEN_REQUEST));
       logInfo(err);
     } else {
-      yield put(resetPasswordFailure(PASSWORD_RESET.INTERNAL_SERVER_ERROR));
+      // Robbo: the human text with the code and number (src/robbo-errors), also with no answer at all.
+      yield put(resetPasswordFailure(PASSWORD_RESET.INTERNAL_SERVER_ERROR, null, describeError(err)));
       logError(err);
     }
   }

@@ -4,9 +4,10 @@ export const RESET_PASSWORD = new AsyncActionType('RESET', 'PASSWORD');
 export const VALIDATE_TOKEN = new AsyncActionType('VALIDATE', 'TOKEN');
 export const PASSWORD_RESET_FAILURE = 'PASSWORD_RESET_FAILURE';
 
-export const passwordResetFailure = (errorCode) => ({
+// Robbo: robboError — the failure's text, code and number (src/robbo-errors), for the failure alerts.
+export const passwordResetFailure = (errorCode, robboError = null) => ({
   type: PASSWORD_RESET_FAILURE,
-  payload: { errorCode },
+  payload: { errorCode, robboError },
 });
 
 // Validate confirmation token
@@ -44,7 +45,7 @@ export const resetPasswordSuccess = data => ({
   payload: { data },
 });
 
-export const resetPasswordFailure = (errorCode, errorMsg = null) => ({
+export const resetPasswordFailure = (errorCode, errorMsg = null, robboError = null) => ({
   type: RESET_PASSWORD.FAILURE,
-  payload: { errorCode, errorMsg: errorMsg || errorCode },
+  payload: { errorCode, errorMsg: errorMsg || errorCode, robboError },
 });
