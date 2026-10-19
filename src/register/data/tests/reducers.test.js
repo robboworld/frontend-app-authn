@@ -19,8 +19,10 @@ describe('Registration Reducer Tests', () => {
     registrationError: {},
     registrationResult: {},
     registrationFormData: {
+      // Robbo: news and mailings opt-in is off by default; company keeps its slot in the form state.
       configurableFormFields: {
-        marketingEmailsOptIn: true,
+        company: '',
+        marketingEmailsOptIn: false,
       },
       formFields: {
         name: '', email: '', username: '', password: '',
@@ -29,7 +31,7 @@ describe('Registration Reducer Tests', () => {
         suggestion: '', type: '',
       },
       errors: {
-        name: '', email: '', username: '', password: '',
+        name: '', email: '', username: '', password: '', company: '',
       },
     },
     validations: null,

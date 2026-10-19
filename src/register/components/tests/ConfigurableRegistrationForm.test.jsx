@@ -120,7 +120,8 @@ describe('ConfigurableRegistrationForm', () => {
       institutionLogin: false,
     };
     window.location = { search: '' };
-    getLocale.mockImplementationOnce(() => ('en-us'));
+    // Robbo: the phone field also calls getLocale(), so a one-time mock leaves the country list without a locale.
+    getLocale.mockImplementation(() => ('en-us'));
   });
 
   afterEach(() => {
@@ -138,6 +139,8 @@ describe('ConfigurableRegistrationForm', () => {
     if (!isThirdPartyAuth) {
       fireEvent.change(getByLabelText('Create a password'), { target: { value: payload.password, name: 'password' } });
     }
+    // Robbo: consent to personal data processing (honor_code) is a required checkbox.
+    fireEvent.click(getByLabelText(/I give consent to/));
   };
 
   describe('Test Configurable Fields', () => {
@@ -238,7 +241,8 @@ describe('ConfigurableRegistrationForm', () => {
       });
 
       const payload = {
-        name: 'John Doe',
+        // Robbo: full name must be three words.
+        name: 'John Doe Smith',
         username: 'john_doe',
         email: 'john.doe@example.com',
         password: 'password1',
@@ -246,6 +250,8 @@ describe('ConfigurableRegistrationForm', () => {
         honor_code: true,
         profession: 'Engineer',
         total_registration_time: 0,
+        // Robbo: without ?next= or an enrollment, registration lands on the course catalog.
+        next: '/courses',
       };
 
       store.dispatch = jest.fn(store.dispatch);
