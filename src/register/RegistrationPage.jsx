@@ -490,7 +490,7 @@ const RegistrationPage = (props) => {
               )}
               <ConfigurableRegistrationForm
                 email={formFields.email}
-                fieldErrors={registrationEmbedded ? temporaryErrors : errors}
+                fieldErrors={errors}
                 formFields={configurableFormFields}
                 setFieldErrors={registrationEmbedded ? setTemporaryErrors : setErrors}
                 setFormFields={setConfigurableFormFields}

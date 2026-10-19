@@ -34,7 +34,8 @@ export const getSuggestionForInvalidEmail = (domain, username) => {
     return '';
   }
 
-  const defaultDomains = ['mail.ru', 'mail', 'ya.ru', 'yandex.ru', 'gmail.com', 'yahoo.com', 'hotmail.com', 'live.com', 'outlook.com'];
+  // Robbo: full domains, matched by the name before the dot (gmail before mail, yandex before ya).
+  const defaultDomains = ['gmail.com', 'hotmail.com', 'yahoo.com', 'live.com', 'outlook.com', 'mail.ru', 'yandex.ru', 'ya.ru'];
   //const defaultDomains = ['yahoo', 'aol', 'hotmail', 'live', 'outlook', 'gmail'];
   const suggestion = getLevenshteinSuggestion(domain, COMMON_EMAIL_PROVIDERS);
 
@@ -43,8 +44,8 @@ export const getSuggestionForInvalidEmail = (domain, username) => {
   }
 
   for (let i = 0; i < defaultDomains.length; i++) {
-    if (domain.includes(defaultDomains[i])) {
-      return `${username}@${defaultDomains[i]}.com`;
+    if (domain.includes(defaultDomains[i].split('.')[0])) {
+      return `${username}@${defaultDomains[i]}`;
     }
   }
 
