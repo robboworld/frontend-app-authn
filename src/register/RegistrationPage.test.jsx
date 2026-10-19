@@ -153,8 +153,11 @@ describe('RegistrationPage', () => {
     fireEvent.blur(getByLabelText('Country/Region'), { target: { value: payload.country, name: 'country' } });
 
     if (!isThirdPartyAuth) {
-      fireEvent.change(getByLabelText('Password'), { target: { value: payload.password, name: 'password' } });
+      // Robbo: the password label is "Create a password".
+      fireEvent.change(getByLabelText('Create a password'), { target: { value: payload.password, name: 'password' } });
     }
+    // Robbo: consent to personal data processing (honor_code) is a required checkbox.
+    fireEvent.click(getByLabelText(/I give consent to/));
   };
 
   describe('Test Registration Page', () => {
@@ -180,12 +183,15 @@ describe('RegistrationPage', () => {
       window.location = { href: getConfig().BASE_URL, search: '?next=/course/demo-course-url' };
 
       const payload = {
-        name: 'John Doe',
+        // Robbo: full name must be three words.
+        name: 'John Doe Smith',
         username: 'john_doe',
         email: 'john.doe@gmail.com',
         password: 'password1',
         country: 'Pakistan',
         honor_code: true,
+        // Robbo (courses): the phone field starts with "+", so an empty number is sent as ''.
+        phone_number: '',
         total_registration_time: 0,
         next: '/course/demo-course-url',
       };
@@ -203,13 +209,18 @@ describe('RegistrationPage', () => {
       jest.spyOn(global.Date, 'now').mockImplementation(() => 0);
 
       const formPayload = {
-        name: 'John Doe',
+        // Robbo: full name must be three words.
+        name: 'John Doe Smith',
         username: 'john_doe',
         email: 'john.doe@example.com',
         country: 'Pakistan',
         honor_code: true,
         social_auth_provider: 'Apple',
+        // Robbo (courses): the phone field starts with "+", so an empty number is sent as ''.
+        phone_number: '',
         total_registration_time: 0,
+        // Robbo: with no ?next= or enrollment, registration sends next=/courses (the catalog).
+        next: '/courses',
       };
 
       store = mockStore({
@@ -287,14 +298,19 @@ describe('RegistrationPage', () => {
       jest.spyOn(global.Date, 'now').mockImplementation(() => 0);
 
       const payload = {
-        name: 'John Doe',
+        // Robbo: full name must be three words.
+        name: 'John Doe Smith',
         username: 'john_doe',
         email: 'john.doe@gmail.com',
         password: 'password1',
         country: 'Pakistan',
         honor_code: true,
+        // Robbo (courses): the phone field starts with "+", so an empty number is sent as ''.
+        phone_number: '',
         total_registration_time: 0,
         marketing_emails_opt_in: true,
+        // Robbo: with no ?next= or enrollment, registration sends next=/courses (the catalog).
+        next: '/courses',
       };
 
       store.dispatch = jest.fn(store.dispatch);
@@ -315,12 +331,17 @@ describe('RegistrationPage', () => {
       });
       jest.spyOn(global.Date, 'now').mockImplementation(() => 0);
       const payload = {
-        name: 'John Doe',
+        // Robbo: full name must be three words.
+        name: 'John Doe Smith',
         email: 'john.doe@gmail.com',
         password: 'password1',
         country: 'Pakistan',
         honor_code: true,
+        // Robbo (courses): the phone field starts with "+", so an empty number is sent as ''.
+        phone_number: '',
         total_registration_time: 0,
+        // Robbo: with no ?next= or enrollment, registration sends next=/courses (the catalog).
+        next: '/courses',
       };
 
       store.dispatch = jest.fn(store.dispatch);
@@ -465,7 +486,9 @@ describe('RegistrationPage', () => {
 
       const { container } = render(routerWrapper(reduxWrapper(<IntlRegistrationPage {...props} />)));
       const checkboxDivs = container.querySelectorAll('div.form-field--checkbox');
-      expect(checkboxDivs.length).toEqual(1);
+      // Robbo: the personal data consent (honor_code) is a checkbox too, next to the single opt-in.
+      expect(checkboxDivs.length).toEqual(2);
+      expect(container.querySelectorAll('input[name="marketingEmailsOptIn"]').length).toEqual(1);
 
       mergeConfig({
         MARKETING_EMAILS_OPT_IN: '',
@@ -898,7 +921,8 @@ describe('RegistrationPage', () => {
           registrationFormData: {
             ...registrationFormData,
             formFields: {
-              name: 'John Doe',
+              // Robbo: full name must be three words.
+              name: 'John Doe Smith',
               username: 'john_doe',
               email: 'john.doe@example.com',
             },
@@ -908,6 +932,8 @@ describe('RegistrationPage', () => {
                 countryCode: 'PK',
                 displayValue: 'Pakistan',
               },
+              // Robbo: consent (honor_code) is required; auto-submit does not tick it for the user.
+              honor_code: true,
             },
           },
         },
@@ -918,7 +944,7 @@ describe('RegistrationPage', () => {
             ...initialState.commonComponents.thirdPartyAuthContext,
             currentProvider: 'Apple',
             pipelineUserDetails: {
-              name: 'John Doe',
+              name: 'John Doe Smith',
               username: 'john_doe',
               email: 'john.doe@example.com',
             },
@@ -930,12 +956,15 @@ describe('RegistrationPage', () => {
 
       render(routerWrapper(reduxWrapper(<IntlRegistrationPage {...props} />)));
       expect(store.dispatch).toHaveBeenCalledWith(registerNewUser({
-        name: 'John Doe',
+        name: 'John Doe Smith',
         username: 'john_doe',
         email: 'john.doe@example.com',
         country: 'PK',
+        honor_code: true,
         social_auth_provider: 'Apple',
         total_registration_time: 0,
+        // Robbo: with no ?next= or enrollment, registration sends next=/courses (the catalog).
+        next: '/courses',
       }));
     });
   });

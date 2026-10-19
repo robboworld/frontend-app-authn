@@ -85,7 +85,8 @@ describe('NameField', () => {
       const { container } = render(routerWrapper(reduxWrapper(<IntlNameField {...props} />)));
 
       const nameInput = container.querySelector('input#name');
-      fireEvent.blur(nameInput, { target: { value: 'https://invalid-name.com', name: 'name' } });
+      // Robbo: a name that is not three words fails earlier, so the URL sits inside a three-word name.
+      fireEvent.blur(nameInput, { target: { value: 'John https://invalid-name.com Smith', name: 'name' } });
 
       expect(props.handleErrorChange).toHaveBeenCalledTimes(1);
       expect(props.handleErrorChange).toHaveBeenCalledWith(

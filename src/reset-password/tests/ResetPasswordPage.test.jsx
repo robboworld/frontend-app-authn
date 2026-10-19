@@ -189,7 +189,8 @@ describe('ResetPasswordPage', () => {
 
   it('should call validation on password field when blur event fires', () => {
     const resetPasswordPage = render(reduxWrapper(<IntlResetPasswordPage {...props} />));
-    const expectedText = 'Password criteria has not been metPassword must contain at least 8 characters, at least one letter, and at least one number';
+    // Robbo: the requirement names Latin letters explicitly.
+    const expectedText = 'Password criteria has not been metPassword must contain at least 8 characters, at least one Latin letter (A–Z, a–z), and at least one number';
     const newPasswordInput = resetPasswordPage.container.querySelector('input#newPassword');
     newPasswordInput.value = 'test-password';
     fireEvent.change(newPasswordInput);

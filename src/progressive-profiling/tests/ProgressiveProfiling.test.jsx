@@ -258,7 +258,8 @@ describe('ProgressiveProfilingTests', () => {
     });
 
     it('should not redirect to recommendations page if user is on its way to enroll in a course', async () => {
-      const redirectUrl = `${getConfig().LMS_BASE_URL}${DEFAULT_REDIRECT_URL}?enrollment_action=1`;
+      // Robbo: a /dashboard redirect goes to the catalog; for an enrollment the LMS returns its finish_auth URL.
+      const redirectUrl = `${getConfig().LMS_BASE_URL}/account/finish_auth?enrollment_action=1`;
       useLocation.mockReturnValue({
         state: {
           registrationResult: {
