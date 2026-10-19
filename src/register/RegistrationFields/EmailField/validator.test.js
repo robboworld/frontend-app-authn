@@ -28,8 +28,10 @@ describe('Email Validators Utils', () => {
     });
 
     it('test getSuggestionForInvalidEmail returns valid suggestion for default domains', () => {
-      const output = getSuggestionForInvalidEmail('aol', 'username');
-      expect(output).toEqual('username@aol.com');
+      // Robbo: the default domains are Russian and common providers (no aol), suggested with their own zone.
+      const output = getSuggestionForInvalidEmail('yandex', 'username');
+      expect(output).toEqual('username@yandex.ru');
+      expect(getSuggestionForInvalidEmail('mail', 'username')).toEqual('username@mail.ru');
     });
     it('test getSuggestionForInvalidEmail returns empty for totally different domain', () => {
       const output = getSuggestionForInvalidEmail('invalid-domain', 'username');
