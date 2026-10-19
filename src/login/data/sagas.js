@@ -12,6 +12,7 @@ import { FORBIDDEN_REQUEST, INTERNAL_SERVER_ERROR } from './constants';
 import {
   loginRequest,
 } from './service';
+import { describeError } from '../../robbo-errors';
 
 export function* handleLoginRequest(action) {
   try {
@@ -34,9 +35,14 @@ export function* handleLoginRequest(action) {
         yield put(loginRequestFailure({ errorCode: FORBIDDEN_REQUEST }));
         logInfo(e);
       } else {
-        yield put(loginRequestFailure({ errorCode: INTERNAL_SERVER_ERROR }));
+        // Robbo: the human text with the code and number (src/robbo-errors), not only "something went wrong".
+        yield put(loginRequestFailure({ errorCode: INTERNAL_SERVER_ERROR, robboError: describeError(e) }));
         logError(e);
       }
+    } else {
+      // Robbo: no answer at all (no connection, the site restarting) used to leave the form silent.
+      yield put(loginRequestFailure({ errorCode: INTERNAL_SERVER_ERROR, robboError: describeError(e) }));
+      logError(e);
     }
   }
 }

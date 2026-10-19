@@ -175,7 +175,11 @@ describe('handleNewUserRegistration', () => {
     expect(loggingService.logError).toHaveBeenCalled();
     expect(dispatched).toEqual([
       actions.registerNewUserBegin(),
-      actions.registerNewUserFailure(camelCaseObject(registerErrorResponse.response.data)),
+      // Robbo: plus the failure's text, code and number (src/robbo-errors)
+      actions.registerNewUserFailure({
+        ...camelCaseObject(registerErrorResponse.response.data),
+        robboError: expect.objectContaining({ code: 'SRV-ERROR' }),
+      }),
     ]);
     registerRequest.mockClear();
   });

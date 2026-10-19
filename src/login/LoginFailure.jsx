@@ -24,6 +24,7 @@ import {
 } from './data/constants';
 import messages from './messages';
 import { windowScrollTo } from '../data/utils';
+import { RobboErrorDetails } from '../robbo-errors';
 
 const LoginFailureMessage = (props) => {
   const { formatMessage } = useIntl();
@@ -193,7 +194,13 @@ const LoginFailureMessage = (props) => {
       break;
     case INTERNAL_SERVER_ERROR:
     default:
-      errorMessage = <p>{formatMessage(messages['internal.server.error.message'])}</p>;
+      // Robbo: what failed and the code with the number (src/robbo-errors) when the saga knows it.
+      errorMessage = context.robboError ? (
+        <>
+          <p>{context.robboError.message}</p>
+          <RobboErrorDetails info={context.robboError} />
+        </>
+      ) : <p>{formatMessage(messages['internal.server.error.message'])}</p>;
       break;
   }
 
@@ -221,6 +228,10 @@ LoginFailureMessage.propTypes = {
     errorMessage: PropTypes.string,
     email: PropTypes.string,
     redirectUrl: PropTypes.string,
+    robboError: PropTypes.shape({
+      message: PropTypes.string,
+      code: PropTypes.string,
+    }),
   }),
   errorCode: PropTypes.string.isRequired,
   errorCount: PropTypes.number.isRequired,

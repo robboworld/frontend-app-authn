@@ -14,6 +14,7 @@ import {
 } from './actions';
 import { INTERNAL_SERVER_ERROR } from './constants';
 import { getFieldsValidations, registerRequest } from './service';
+import { describeError } from '../../robbo-errors';
 
 export function* handleNewUserRegistration(action) {
   try {
@@ -32,7 +33,8 @@ export function* handleNewUserRegistration(action) {
       yield put(registerNewUserFailure(camelCaseObject(e.response.data)));
       logInfo(e);
     } else {
-      yield put(registerNewUserFailure({ errorCode: INTERNAL_SERVER_ERROR }));
+      // Robbo: the failure's text, code and number (src/robbo-errors) for RegistrationFailure.
+      yield put(registerNewUserFailure({ errorCode: INTERNAL_SERVER_ERROR, robboError: describeError(e) }));
       logError(e);
     }
   }

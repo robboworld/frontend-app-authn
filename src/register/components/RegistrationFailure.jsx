@@ -7,6 +7,7 @@ import { Error } from '@openedx/paragon/icons';
 import PropTypes from 'prop-types';
 
 import { windowScrollTo } from '../../data/utils';
+import { RobboErrorDetails } from '../../robbo-errors';
 import {
   FORBIDDEN_REQUEST,
   INTERNAL_SERVER_ERROR,
@@ -32,7 +33,8 @@ const RegistrationFailureMessage = (props) => {
   let errorMessage;
   switch (errorCode) {
     case INTERNAL_SERVER_ERROR:
-      errorMessage = formatMessage(messages['registration.request.server.error']);
+      // Robbo: what failed (src/robbo-errors), the code and number are shown below the message.
+      errorMessage = context.robboError ? context.robboError.message : formatMessage(messages['registration.request.server.error']);
       break;
     case FORBIDDEN_REQUEST:
       errorMessage = formatMessage(messages['registration.rate.limit.error']);
@@ -57,6 +59,7 @@ const RegistrationFailureMessage = (props) => {
     <Alert id="validation-errors" className="mb-5" variant="danger" icon={Error}>
       <Alert.Heading>{formatMessage(messages['registration.request.failure.header'])}</Alert.Heading>
       <p>{errorMessage}</p>
+      {errorCode === INTERNAL_SERVER_ERROR && context.robboError && <RobboErrorDetails info={context.robboError} />}
     </Alert>
   );
 };
@@ -71,6 +74,10 @@ RegistrationFailureMessage.propTypes = {
   context: PropTypes.shape({
     provider: PropTypes.string,
     errorMessage: PropTypes.string,
+    robboError: PropTypes.shape({
+      message: PropTypes.string,
+      code: PropTypes.string,
+    }),
   }),
   errorCode: PropTypes.string.isRequired,
   failureCount: PropTypes.number.isRequired,

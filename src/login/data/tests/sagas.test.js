@@ -104,7 +104,22 @@ describe('handleLoginRequest', () => {
 
     await testErrorResponse(loginErrorResponse, loggingService.logError, [
       actions.loginRequestBegin(),
-      actions.loginRequestFailure(loginErrorResponse.response.data),
+      // Robbo: plus the failure's text, code and number (src/robbo-errors)
+      actions.loginRequestFailure(expect.objectContaining({
+        errorCode: INTERNAL_SERVER_ERROR,
+        robboError: expect.anything(),
+      })),
+    ]);
+  });
+
+  // Robbo: a request with no answer used to dispatch nothing, the form stayed silent.
+  it('should report a failure with no answer', async () => {
+    await testErrorResponse({ request: {}, isAxiosError: true, message: 'Network Error' }, loggingService.logError, [
+      actions.loginRequestBegin(),
+      actions.loginRequestFailure(expect.objectContaining({
+        errorCode: INTERNAL_SERVER_ERROR,
+        robboError: expect.objectContaining({ code: 'NET-OFFLINE' }),
+      })),
     ]);
   });
 });
