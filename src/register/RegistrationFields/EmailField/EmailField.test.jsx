@@ -132,24 +132,25 @@ describe('EmailField', () => {
       const { container } = render(routerWrapper(reduxWrapper(<IntlEmailField {...props} />)));
 
       const emailInput = container.querySelector('input#email');
-      fireEvent.blur(emailInput, { target: { value: 'john@yopmail.com', name: 'email' } });
+      // Robbo: hints only for Russian providers.
+      fireEvent.blur(emailInput, { target: { value: 'john@yandx.ru', name: 'email' } });
 
       const emailWarning = container.querySelector('#email-warning');
-      expect(emailWarning.textContent).toEqual('Did you mean: john@hotmail.com?');
+      expect(emailWarning.textContent).toEqual('Did you mean: john@yandex.ru?');
     });
 
     it('should be able to click on email suggestions and set it as value', () => {
       const { container } = render(routerWrapper(reduxWrapper(<IntlEmailField {...props} />)));
 
       const emailInput = container.querySelector('input#email');
-      fireEvent.blur(emailInput, { target: { value: 'john@yopmail.com', name: 'email' } });
+      fireEvent.blur(emailInput, { target: { value: 'john@yandx.ru', name: 'email' } });
 
       const emailSuggestion = container.querySelector('.email-suggestion-alert-warning');
       fireEvent.click(emailSuggestion);
 
       expect(props.handleChange).toHaveBeenCalledTimes(1);
       expect(props.handleChange).toHaveBeenCalledWith(
-        { target: { name: 'email', value: 'john@hotmail.com' } },
+        { target: { name: 'email', value: 'john@yandex.ru' } },
       );
     });
 
@@ -157,20 +158,20 @@ describe('EmailField', () => {
       const { container } = render(routerWrapper(reduxWrapper(<IntlEmailField {...props} />)));
 
       const emailInput = container.querySelector('input#email');
-      fireEvent.blur(emailInput, { target: { value: 'john@gmail.mistake', name: 'email' } });
+      fireEvent.blur(emailInput, { target: { value: 'john@mail.ry', name: 'email' } });
 
       const errorElement = container.querySelector('.alert-danger');
-      expect(errorElement.textContent).toEqual('Did you mean john@gmail.com?');
+      expect(errorElement.textContent).toEqual('Did you mean john@mail.ru?');
     });
 
     it('should give error and suggestion for invalid email', () => {
       const { container } = render(routerWrapper(reduxWrapper(<IntlEmailField {...props} />)));
 
       const emailInput = container.querySelector('input#email');
-      fireEvent.blur(emailInput, { target: { value: 'john@gmail', name: 'email' } });
+      fireEvent.blur(emailInput, { target: { value: 'john@mail', name: 'email' } });
 
       const errorElement = container.querySelector('.alert-danger');
-      expect(errorElement.textContent).toEqual('Did you mean john@gmail.com?');
+      expect(errorElement.textContent).toEqual('Did you mean john@mail.ru?');
 
       expect(props.handleErrorChange).toHaveBeenCalledTimes(1);
       expect(props.handleErrorChange).toHaveBeenCalledWith(
@@ -206,10 +207,10 @@ describe('EmailField', () => {
       const { container } = render(routerWrapper(reduxWrapper(<IntlEmailField {...props} />)));
 
       const emailInput = container.querySelector('input#email');
-      fireEvent.blur(emailInput, { target: { value: 'john@gmail.mistake', name: 'email' } });
+      fireEvent.blur(emailInput, { target: { value: 'john@mail.ry', name: 'email' } });
 
       const suggestionText = container.querySelector('.alert-danger');
-      expect(suggestionText.textContent).toEqual('Did you mean john@gmail.com?');
+      expect(suggestionText.textContent).toEqual('Did you mean john@mail.ru?');
 
       const closeButton = container.querySelector('.email-suggestion__close');
       fireEvent.click(closeButton);

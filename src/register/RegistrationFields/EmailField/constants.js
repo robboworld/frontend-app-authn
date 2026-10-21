@@ -2,7 +2,29 @@ export const COMMON_EMAIL_PROVIDERS = [
   'hotmail.com', 'yahoo.com', 'outlook.com', 'live.com', 'gmail.com',
 ];
 
-export const DEFAULT_SERVICE_PROVIDER_DOMAINS = ['yahoo', 'hotmail', 'live', 'outlook', 'gmail', 'mail', 'ya', 'yandex'];
+// Robbo: hints are given only for Russian providers: name -> its real domains. The typed zone is kept,
+// a hint never moves an address to another zone (mial.com is not mail.ru).
+export const RU_SERVICE_PROVIDER_DOMAINS = {
+  mail: ['mail.ru'],
+  list: ['list.ru'],
+  inbox: ['inbox.ru'],
+  ya: ['ya.ru'],
+  yandex: ['yandex.ru', 'yandex.com', 'yandex.by', 'yandex.kz', 'yandex.ua'],
+  rambler: ['rambler.ru'],
+};
+
+// Robbo: other providers get no hints, but are matched too, so gmail is not taken for a typo of mail.
+export const OTHER_SERVICE_PROVIDERS = [
+  'gmail', 'googlemail', 'hotmail', 'outlook', 'live', 'yahoo', 'icloud', 'msn', 'aol', 'proton', 'protonmail',
+];
+
+// Robbo: real mail domains that never get a hint (bk.ru is not a typo of ya.ru).
+export const KNOWN_EMAIL_DOMAINS = [
+  ...Object.values(RU_SERVICE_PROVIDER_DOMAINS).flat(),
+  'bk.ru', 'internet.ru', 'ro.ru', 'lenta.ru', 'narod.ru', 'vk.com', 'ok.ru',
+  'gmail.com', 'googlemail.com', 'hotmail.com', 'outlook.com', 'live.com', 'yahoo.com', 'icloud.com', 'me.com',
+  'msn.com', 'aol.com', 'proton.me', 'protonmail.com', 'mail.com',
+];
 
 export const DEFAULT_TOP_LEVEL_DOMAINS = [
   'aaa', 'aarp', 'abarth', 'abb', 'abbott', 'abbvie', 'abc', 'able', 'abogado', 'abudhabi', 'ac', 'academy',
